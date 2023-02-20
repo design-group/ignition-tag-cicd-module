@@ -1,0 +1,30 @@
+# Gradle build outputs
+build/
+bin/
+
+# Temporary build files
+tmp_*
+
+# VS Code files
+.vscode/
+
+# Gradle Wrapper
+gradle/wrapper/gradle-wrapper.jar
+
+# Gradle user home directory
+.gradle/
+
+# Local Gradle test cache
+.gradle-test-results/
+
+# Gradle Daemon logs
+.gradle-daemon/
+
+# MacOS Files
+.DS_Store
+
+# NPM files
+node_modules/
+**/package-lock.json
+
+gradle.properties

@@ -1,0 +1,11 @@
+services:
+  ignition:
+    image: bwdesigngroup/ignition-docker:8.1.24
+    ports:
+      - 8088
+    environment:
+      - DEVELOPER_MODE=Y
+    volumes:
+      - ../build/Tag-CICD.modl:/modules/Tag-CICD.modl
+      - ./tmp_ignition-data:/workdir
+    

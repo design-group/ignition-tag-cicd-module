@@ -1,0 +1,16 @@
+pluginManagement {
+    repositories {
+        gradlePluginPortal()
+		mavenCentral()
+        maven {
+            url 'https://nexus.inductiveautomation.com/repository/public'
+        }
+    }
+}
+
+rootProject.name = "tag-cicd"
+
+include(
+":",
+    ":gateway"
+)
