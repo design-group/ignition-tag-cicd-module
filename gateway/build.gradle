@@ -11,8 +11,6 @@ dependencies {
     
     compileOnly("com.inductiveautomation.ignitionsdk:ignition-common:${sdk_version}")
     compileOnly("com.inductiveautomation.ignitionsdk:gateway-api:${sdk_version}")
-	compileOnly("com.inductiveautomation.ignitionsdk:client-api:${sdk_version}")
-	compileOnly("com.inductiveautomation.ignitionsdk:vision-client-api:${sdk_version}")
 	
 }
 

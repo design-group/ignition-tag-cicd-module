@@ -41,7 +41,7 @@ ignitionModule {
      *  Example entry: [ ":gateway": "G", ":common": "GC", ":vision-client": "C" ]
      */
     projectScopes = [
-        ":gateway" : "GC"
+        ":gateway" : "G"
     ]
 
     /*

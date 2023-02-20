@@ -172,7 +172,7 @@ public class TagCICDRoutes {
 	 * @throws JSONException if there is an error creating the JSON object
 	 */
 	public JsonObject getTagConfiguration(RequestContext requestContext, HttpServletResponse httpServletResponse) throws JSONException {		
-        String provider = requestContext.getParameter(DEFAULT_PROVIDER);
+        String provider = requestContext.getParameter("provider");
 		// If provider is not specified, default to DEFAULT_PROVIDER
 		if (provider == null) {
 			provider = DEFAULT_PROVIDER;
