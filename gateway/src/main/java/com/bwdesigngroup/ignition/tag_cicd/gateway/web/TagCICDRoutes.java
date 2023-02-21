@@ -8,6 +8,7 @@ package com.bwdesigngroup.ignition.tag_cicd.gateway.web;
 import static com.inductiveautomation.ignition.gateway.dataroutes.HttpMethod.POST;
 import static com.inductiveautomation.ignition.gateway.dataroutes.RouteGroup.TYPE_JSON;
 
+import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -36,7 +37,7 @@ import com.inductiveautomation.ignition.gateway.tags.model.GatewayTagManager;
 public class TagCICDRoutes {
 	private final Logger logger = LoggerFactory.getLogger(getClass());
     private final RouteGroup routes;
-	private final GatewayContext context;
+	private final GatewayTagManager tagManager;
 
 	private static final String DEFAULT_PROVIDER = "default";
 	private static final String UDT_TYPES_FOLDER = "_types_";
@@ -49,7 +50,7 @@ public class TagCICDRoutes {
 	 */
 	public TagCICDRoutes(GatewayContext context, RouteGroup group) {
         this.routes = group;
-		this.context = context;
+		this.tagManager = context.getTagManager();
     }
 
 	/**
@@ -126,7 +127,7 @@ public class TagCICDRoutes {
 		
 		logger.info("Requesting tag configuration for (baseTagPath: " + baseTagPath + ", recursive: " + recursive + ", localPropsOnly: " + localPropsOnly + ")");
 
-		TagConfigurationModel tagConfigurationModel = context.getTagManager().getTagProvider(provider).getTagConfigsAsync(List.of(baseTagPath), recursive, localPropsOnly).join().get(0);
+		TagConfigurationModel tagConfigurationModel = tagManager.getTagProvider(provider).getTagConfigsAsync(List.of(baseTagPath), recursive, localPropsOnly).join().get(0);
 
 		return tagConfigurationModel;
 	}
@@ -159,7 +160,7 @@ public class TagCICDRoutes {
 		}
 
 		logger.info("Deleting tags from provider " + provider + " with paths: " + tagPaths.toString());
-		deleteResults.addAll(context.getTagManager().getTagProvider(provider).removeTagConfigsAsync(tagPaths).join());
+		deleteResults.addAll(tagManager.getTagProvider(provider).removeTagConfigsAsync(tagPaths).join());
 
 		return deleteResults;
 	}
@@ -218,6 +219,56 @@ public class TagCICDRoutes {
     }
 
 	/**
+	 * Saves the given JSON object to the given file path.
+	 * @param json the JSON object to save
+	 * @param filePath the file path to save the JSON object to
+	 * @throws IOException if there is an error writing the JSON object to the file
+	 */
+	public void saveJsonToFile(JsonObject json, String filePath) throws IOException {
+		// Create the file if it doesn't exist
+		File file = new File(filePath);
+		file.createNewFile();
+
+		// Write the JSON to the file
+		FileWriter fileWriter = new FileWriter(file);
+		fileWriter.write(json.toString());
+		fileWriter.close();
+	}
+
+	/**
+	 * Searches through the given json object for any `tags` arrays, if present it executes this function against each array.
+	 * If the search hits a `tagType` that isnt `Provider` or `Folder`, it will execute saveJsonToFile on the tag.
+	 * Whenever the function hits a `Folder` or `Provider`, it will create a folder with the name of the object, and then
+	 * execute this function on the `tags` array of the object.
+	 * 
+	 * @param json the json object to search through
+	 * @param baseFilePath the base file path to save the json files to
+	 */
+	public void saveJsonFiles(JsonObject json, String baseFilePath) throws IOException {
+		// If the json object has a `tags` array, execute this function on the array
+		if (json.has("tags")) {
+			JsonArray tags = json.getAsJsonArray("tags");
+			for (JsonElement tag : tags) {
+				JsonObject tagObject = tag.getAsJsonObject();
+				// If the tag is a folder or provider, create a folder with the name of the object, and then execute this function on the `tags` array of the object
+				if (tagObject.get("tagType").getAsString().equals("Folder") || tagObject.get("tagType").getAsString().equals("Provider")) {
+					String folderName = tagObject.get("name").getAsString();
+					String folderPath = baseFilePath + "/" + folderName;
+					File folder = new File(folderPath);
+					folder.mkdir();
+					saveJsonFiles(tagObject, folderPath);
+				} else {
+					// If the tag is not a folder or provider, save the json to a file
+					saveJsonToFile(tagObject, baseFilePath + "/" + tagObject.get("name").getAsString() + ".json");
+				}
+			}
+		} else {
+			// If the json object does not have a `tags` array, save the json to a file
+			saveJsonToFile(json, baseFilePath + ".json");
+		}
+	}
+
+	/**
 	 * Gets the tag configuration for the given provider and tag path, and writes it to a file.
 	 *
 	 * @param requestContext the RequestContext for the request
@@ -229,23 +280,49 @@ public class TagCICDRoutes {
 		JsonObject json = getTagConfiguration(requestContext, httpServletResponse);
 
 		String filePath = requestContext.getParameter("filePath");
+		logger.trace("filePath: " + filePath);
 		// If filePath is not specified throw an error
 		if (filePath == null) {
 			throw new IllegalArgumentException("filePath parameter is required");
 		}
 
+		Boolean individualFilesPerObject = Boolean.parseBoolean(requestContext.getParameter("individualFilesPerObject"));
+		logger.trace("individualFilesPerObject: " + individualFilesPerObject);
+
+		String directoryPath = null;
+		// If the filePath does not end in .json, it is a directory
+		if (!filePath.endsWith(".json")) {
+			directoryPath = filePath;
+			// If the filePath does not end in a slash, add one
+			if (!filePath.endsWith("/")) {
+				directoryPath += "/";
+			}
+		}
+
+		// If the filePath provided is a directory, make sure it exists. If it doesn't exist, create it.
+		if (directoryPath != null) {
+			File directory = new File(directoryPath);
+			if (!directory.exists()) {
+				directory.mkdirs();
+			}
+		}
+
 		try {
-			FileWriter fileWriter = new FileWriter(filePath);
-			fileWriter.write(json.toString());
-			fileWriter.close();
+			if (individualFilesPerObject) {
+				// If individualFilesPerObject is true, save each tag as a separate file
+				saveJsonFiles(json, filePath);
+			} else {
+				// If individualFilesPerObject is false, save the entire tag configuration as a single file
+				saveJsonToFile(json, filePath);
+			}
 		} catch (IOException e) {
 			logger.error("Error saving tag configuration", e);
 			e.printStackTrace();
+			json = getBadRequestError(httpServletResponse, "Error saving tag configuration: " + e.getMessage());
 		}
 
 		return json;
 	}
-
 
 	/**
 	 * Imports a tag configuration from a JSON string in the request body
@@ -308,8 +385,6 @@ public class TagCICDRoutes {
 		}
 
 		CollisionPolicy collisionPolicy = CollisionPolicy.fromString(collisionPolicyString);
-		
-		GatewayTagManager tagManager = context.getTagManager();
 
 		// Convert the List of QualityCodes to an array of strings
 		JsonObject responseObject = new JsonObject();
@@ -345,8 +420,6 @@ public class TagCICDRoutes {
 		addQualityCodesToJsonObject(responseObject, createdTags, "created_tags");
 		return responseObject;
 	}
-
-
 
 	/**
 	 * Adds a JsonObject of tags and their corresponding QualityCodes to the given JsonObject, 
