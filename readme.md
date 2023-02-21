@@ -34,6 +34,7 @@ The response will be a `json` file containing the exported tags.
 | `recursive` | `boolean` | If true, will recursively search the `baseTagPath` for tags. If false, will only search for the direct children of `baseTagPath` for tags. |
 | `localPropsOnly` | `boolean` | Set to True to only return configuration created by a user (aka no inherited properties). Useful for tag export and tag UI edits of raw JSON text. |
 | `filePath` | `string` | The file path to export the tags to, local to the Ignition Gateway |
+| `individualFilesPerObject` | `boolean` | If true, will export each tag to a separate file in a folder structure representative of the tag configuration model. If false, will export all tags to a single file. |
 
 #### Response
 
