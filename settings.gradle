@@ -12,5 +12,6 @@ rootProject.name = "tag-cicd"
 
 include(
 ":",
+	":common",
     ":gateway"
 )

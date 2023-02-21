@@ -8,7 +8,7 @@ ext {
 }
 
 allprojects {
-    version = "0.0.1-SNAPSHOT"
+    version = "0.0.2"
 }
 
 ignitionModule {
@@ -41,6 +41,7 @@ ignitionModule {
      *  Example entry: [ ":gateway": "G", ":common": "GC", ":vision-client": "C" ]
      */
     projectScopes = [
+		":common" : "GC",
         ":gateway" : "G"
     ]
 

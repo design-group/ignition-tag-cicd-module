@@ -8,7 +8,8 @@ import javax.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.bwdesigngroup.ignition.tag_cicd.gateway.web.TagCICDRoutes;
+import com.bwdesigngroup.ignition.tag_cicd.gateway.web.routes.TagExportRoutes;
+import com.bwdesigngroup.ignition.tag_cicd.gateway.web.routes.TagImportRoutes;
 import com.inductiveautomation.ignition.common.licensing.LicenseState;
 import com.inductiveautomation.ignition.common.project.resource.adapter.ResourceTypeAdapter;
 import com.inductiveautomation.ignition.common.project.resource.adapter.ResourceTypeAdapterRegistry;
@@ -94,7 +95,8 @@ public class TagCICDGatewayHook extends AbstractGatewayModuleHook {
     @Override
     public void mountRouteHandlers(RouteGroup routes) {
 		logger.info("Mounting route handlers for TagCICDGatewayHook");
-		new TagCICDRoutes(context, routes).mountRoutes();
+		new TagExportRoutes(context, routes).mountRoutes();
+		new TagImportRoutes(context, routes).mountRoutes();
     }
 
     /**
