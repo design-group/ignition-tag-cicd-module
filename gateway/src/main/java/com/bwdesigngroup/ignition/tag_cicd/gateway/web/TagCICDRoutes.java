@@ -8,6 +8,7 @@ package com.bwdesigngroup.ignition.tag_cicd.gateway.web;
 import static com.inductiveautomation.ignition.gateway.dataroutes.HttpMethod.POST;
 import static com.inductiveautomation.ignition.gateway.dataroutes.RouteGroup.TYPE_JSON;
 
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -59,11 +60,23 @@ public class TagCICDRoutes {
 		* Export tag configuration
 		* This will be a GET request, with the tag configuration being returned as JSON
 		* 
-		* Example Usage: curl http://tag-cicd.localtest.me/data/tag-cicd/tags/export?provider=default&tagPath=&recursive=true&localPropsOnly=false >> tag_configuration.json
+		* Example Usage: curl http://tag-cicd.localtest.me/data/tag-cicd/tags/export?provider=default&tagPath=&recursive=true&localPropsOnly=false
 		*/ 
         this.routes.newRoute("/tags/export")
                 .handler(this::getTagConfiguration)
                 .type(TYPE_JSON)
+                .mount();
+
+		/*
+		* Export tag configuration to a given filePath relative to the Ignition gateway
+		* This will be a POST request, with the tag configuration being returned as JSON
+		* 
+		* Example Usage: curl -X POST http://tag-cicd.localtest.me/data/tag-cicd/tags/export?provider=default&tagPath=&recursive=true&localPropsOnly=false&filePath=/workdir/tag_configuration.json
+		*/ 
+        this.routes.newRoute("/tags/export")
+                .handler(this::saveTagConfiguration)
+                .type(TYPE_JSON)
+				.method(POST)
                 .mount();
 		
 		/*
@@ -205,6 +218,36 @@ public class TagCICDRoutes {
     }
 
 	/**
+	 * Gets the tag configuration for the given provider and tag path, and writes it to a file.
+	 *
+	 * @param requestContext the RequestContext for the request
+	 * @param httpServletResponse the HttpServletResponse for the response
+	 * @return the tag configuration as a JSON object
+	 * @throws JSONException if there is an error creating the JSON object
+	 */
+	public JsonObject saveTagConfiguration(RequestContext requestContext, HttpServletResponse httpServletResponse) throws JSONException {		
+		JsonObject json = getTagConfiguration(requestContext, httpServletResponse);
+
+		String filePath = requestContext.getParameter("filePath");
+		// If filePath is not specified throw an error
+		if (filePath == null) {
+			throw new IllegalArgumentException("filePath parameter is required");
+		}
+
+		try {
+			FileWriter fileWriter = new FileWriter(filePath);
+			fileWriter.write(json.toString());
+			fileWriter.close();
+		} catch (IOException e) {
+			logger.error("Error saving tag configuration", e);
+			e.printStackTrace();
+		}
+
+		return json;
+	}
+
+
+	/**
 	 * Imports a tag configuration from a JSON string in the request body
 	 *
 	 * @param requestContext the context of the HTTP request
@@ -302,6 +345,8 @@ public class TagCICDRoutes {
 		addQualityCodesToJsonObject(responseObject, createdTags, "created_tags");
 		return responseObject;
 	}
+
+
 
 	/**
 	 * Adds a JsonObject of tags and their corresponding QualityCodes to the given JsonObject, 

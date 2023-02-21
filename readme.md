@@ -4,7 +4,7 @@ This module is used to enable CICD practices for Ignition tags. It enables the c
 
 ## API Endpoints
 
-### Export Tags
+### Export Tags To String
 
 `GET /data/tag-cicd/tags/export`
 
@@ -20,6 +20,26 @@ This module is used to enable CICD practices for Ignition tags. It enables the c
 #### Response
 
 The response will be a `json` file containing the exported tags.
+
+### Export Tags To File
+
+`POST /data/tag-cicd/tags/export-file`
+
+#### Parameters
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| `provider` | `string` | The tag provider to export from. |
+| `baseTagPath` | `string` | The base tag path to start the export from. |
+| `recursive` | `boolean` | If true, will recursively search the `baseTagPath` for tags. If false, will only search for the direct children of `baseTagPath` for tags. |
+| `localPropsOnly` | `boolean` | Set to True to only return configuration created by a user (aka no inherited properties). Useful for tag export and tag UI edits of raw JSON text. |
+| `filePath` | `string` | The file path to export the tags to, local to the Ignition Gateway |
+
+#### Response
+
+The response will be the `json` string of the exported tags. This is the same as the `Export Tags To String` endpoint.
+
+The file will be created at the `filePath` specified in the request.
 
 ### Import Tags
 
