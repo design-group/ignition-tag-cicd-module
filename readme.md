@@ -80,9 +80,8 @@ curl -X POST -H "Content-Type: application/json" -d @tag_configuration.json http
 ```sh
 curl https://<my_gateway_url>/data/tag-cicd/tags/export\?recursive\=true -o tag_configuration.json
 ```
-
-5. Add & Commit changes to branch
-6. Push to repo
+1. Add & Commit changes to branch
+2. Push to repo
 
 ## Building the Module
 
@@ -100,4 +99,33 @@ Once the `gradle.properties` file has been filled out, the module can be built b
 
 ```sh
 ./gradlew build
+```
+
+### Environment Setup
+
+#### Leveraging SDKMAN
+
+1. Install SDKMAN
+
+```sh
+curl -s "https://get.sdkman.io" | bash
+```
+
+2. Install Java
+
+```sh
+sdk install java java 11.0.22-zulu
+```
+
+3. Install Gradle
+
+```sh
+sdk install gradle 6.8.2
+```
+
+4. If you are going to deploy to a gateway with non-standard certificates installed, you will need to add the gateway's certificate to the Java truststore. This can be done by running the following
+
+```sh
+keytool -import -alias root_ca -file /path/to/root_ca.crt -keystore ~/.sdkman/candidates/java/current/lib/security/cacertss -storepass changeit
+keytool -import -alias server_cert -file /path/to/server.crt -keystore ~/.sdkman/candidates/java/current/lib/security/cacertss -storepass changeit
 ```

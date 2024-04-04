@@ -4,6 +4,8 @@ bin/
 
 # Temporary build files
 tmp_*
+temp/
+tmp/
 
 # VS Code files
 .vscode/

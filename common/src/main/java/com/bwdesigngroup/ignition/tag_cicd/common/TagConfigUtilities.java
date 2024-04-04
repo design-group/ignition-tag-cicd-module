@@ -47,7 +47,7 @@ public class TagConfigUtilities {
 			baseTagPath = new BasicTagPath(provider, List.of(tagPath));
 		}
 		
-		logger.info("Requesting tag configuration for (baseTagPath: " + baseTagPath + ", recursive: " + recursive + ", localPropsOnly: " + localPropsOnly + ")");
+		logger.info("Requesting tag configuration for provider " + provider + " and tag path " + baseTagPath.toString() + " with recursive=" + recursive + " and localPropsOnly=" + localPropsOnly);
 
 		TagConfigurationModel tagConfigurationModel = tagManager.getTagProvider(provider).getTagConfigsAsync(List.of(baseTagPath), recursive, localPropsOnly).join().get(0);
 

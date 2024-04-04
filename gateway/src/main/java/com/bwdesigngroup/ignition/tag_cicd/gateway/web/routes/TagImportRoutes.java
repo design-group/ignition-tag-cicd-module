@@ -38,7 +38,7 @@ import com.inductiveautomation.ignition.gateway.tags.model.GatewayTagManager;
  * @author Keith Gamble
  */
 public class TagImportRoutes {
-	private final Logger logger = LoggerFactory.getLogger(getClass());
+	private static final Logger logger = LoggerFactory.getLogger(TagImportRoutes.class.getName());
 	private final RouteGroup routes;
 	private final GatewayTagManager tagManager;
 

@@ -9,6 +9,8 @@ package com.bwdesigngroup.ignition.tag_cicd.common;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.inductiveautomation.ignition.common.gson.JsonObject;
 
@@ -17,6 +19,8 @@ import com.inductiveautomation.ignition.common.gson.JsonObject;
  * @author Keith Gamble
  */
 public class FileUtilities {
+	private static final Logger logger = LoggerFactory.getLogger(FileUtilities.class.getName());
+
 
 	/**
 	 * Saves the given JSON object to the given file path.
@@ -25,6 +29,7 @@ public class FileUtilities {
 	 * @throws IOException if there is an error writing the JSON object to the file
 	 */
 	public static void saveJsonToFile(JsonObject json, String filePath) throws IOException {
+		logger.trace("Saving JSON to file: " + filePath);
 		// Create the file if it doesn't exist
 		File file = new File(filePath);
 		file.createNewFile();
