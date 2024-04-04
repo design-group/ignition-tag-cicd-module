@@ -28,3 +28,8 @@ node_modules/
 **/package-lock.json
 
 gradle.properties
+
+## Python testing files
+__pycache__/
+.pytest_cache/
+out/

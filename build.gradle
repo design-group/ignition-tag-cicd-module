@@ -90,5 +90,5 @@ task deepClean() {
 }
 
 tasks.withType(io.ia.sdk.gradle.modl.task.Deploy).configureEach {
-    hostGateway = "http://tag-cicd.localtest.me:80"
+    hostGateway = project.hostGateway
 }

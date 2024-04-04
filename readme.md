@@ -70,7 +70,7 @@ The response will be a list of qualified values describing if each tag import wa
    2. Replace `<my_gateway_url>` with your gateway url
 
 ```sh
-curl -X POST -H "Content-Type: application/json" -d @tag_configuration.json http://<my_gateway_url>/data/tag-cicd/tags/import\?collisionPolicy\=d
+curl -X POST -H "Content-Type: application/json" -d @tag_configuration.json https://<my_gateway_url>/data/tag-cicd/tags/import\?collisionPolicy\=d
 ```
 
 3. Make Changes
@@ -78,8 +78,26 @@ curl -X POST -H "Content-Type: application/json" -d @tag_configuration.json http
    1. Replace `<my_gateway_url>` with your gateway url
 
 ```sh
-curl http://<my_gateway_url>/data/tag-cicd/tags/export\?recursive\=true -o tag_configuration.json
+curl https://<my_gateway_url>/data/tag-cicd/tags/export\?recursive\=true -o tag_configuration.json
 ```
 
 5. Add & Commit changes to branch
 6. Push to repo
+
+## Building the Module
+
+Within the root directory there is a file named `gradle.properties.template`. This file should be copied to `gradle.properties` and the properties within it should be filled out with the appropriate values.
+
+| Property | Description |
+| -------- | ----------- |
+| `ignition.signing.keystoreFile` | The path to the keystore file. |
+| `ignition.signing.keystorePassword` | The password for the keystore. |
+| `ignition.signing.certFile` | The path to the certificate file. |
+| `ignition.signing.certAlias` | The alias of the certificate. |
+| `ignition.signing.certPassword` | The password for the certificate. |
+
+Once the `gradle.properties` file has been filled out, the module can be built by running the following command:
+
+```sh
+./gradlew build
+```

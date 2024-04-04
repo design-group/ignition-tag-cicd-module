@@ -130,9 +130,10 @@ public class TagExportRoutes {
 			e.printStackTrace();
 		}
 
-		json = (JsonObject) JsonUtilities.createDeterministicCopy(json);
-
-		return json;
+		JsonObject deterministic_json = (JsonObject) JsonUtilities.createDeterministicCopy(json);
+		
+		logger.trace("Deterministic JSON: " + deterministic_json);
+		return deterministic_json;
 	}
 
 	/**

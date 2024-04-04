@@ -1,0 +1,122 @@
+{
+    "name": "",
+    "tagType": "Provider",
+    "tags": [
+        {
+            "name": "Sample UDTs",
+            "tagType": "Folder",
+            "tags": [
+                {
+                    "name": "UDT B",
+                    "tagType": "UdtInstance",
+                    "tags": [
+                        {
+                            "name": "Example Tag",
+                            "tagType": "AtomicTag"
+                        },
+                        {
+                            "name": "A different example tag",
+                            "tagType": "AtomicTag"
+                        }
+                    ],
+                    "typeId": "Example UDT Folder/Type B"
+                },
+                {
+                    "name": "UDT A",
+                    "tagType": "UdtInstance",
+                    "tags": [
+                        {
+                            "name": "Example Tag",
+                            "tagType": "AtomicTag"
+                        },
+                        {
+                            "name": "A different example tag",
+                            "tagType": "AtomicTag"
+                        }
+                    ],
+                    "typeId": "Example UDT Folder/Type A"
+                }
+            ]
+        },
+        {
+            "name": "_types_",
+            "tagType": "Folder",
+            "tags": [
+                {
+                    "name": "Example UDT Folder",
+                    "tagType": "Folder",
+                    "tags": [
+                        {
+                            "name": "Type A",
+                            "tagType": "UdtType",
+                            "tags": [
+                                {
+                                    "name": "Example Tag",
+                                    "tagType": "AtomicTag",
+                                    "valueSource": "memory"
+                                },
+                                {
+                                    "name": "A different example tag",
+                                    "tagType": "AtomicTag",
+                                    "valueSource": "memory"
+                                }
+                            ]
+                        },
+                        {
+                            "name": "Type B",
+                            "tagType": "UdtType",
+                            "tags": [
+                                {
+                                    "name": "A different example tag",
+                                    "tagType": "AtomicTag",
+                                    "valueSource": "memory"
+                                },
+                                {
+                                    "name": "Example Tag",
+                                    "tagType": "AtomicTag",
+                                    "valueSource": "memory"
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "name": "Sample Tags",
+            "tagType": "Folder",
+            "tags": [
+                {
+                    "name": "Sample Tag 5",
+                    "tagType": "AtomicTag",
+                    "value": 5,
+                    "valueSource": "memory"
+                },
+                {
+                    "name": "Sample Tag 1",
+                    "tagType": "AtomicTag",
+                    "value": 1,
+                    "valueSource": "memory"
+                },
+                {
+                    "name": "Sample Tag 2",
+                    "tagType": "AtomicTag",
+                    "value": 2,
+                    "valueSource": "memory"
+                },
+                {
+                    "name": "Sample Tag 3",
+                    "tagType": "AtomicTag",
+                    "value": 3,
+                    "valueSource": "memory"
+                },
+                {
+                    "name": "Sample Tag 4",
+                    "tagType": "AtomicTag",
+                    "value": 4,
+                    "valueSource": "memory"
+                }
+            ]
+        }
+    ]
+}
