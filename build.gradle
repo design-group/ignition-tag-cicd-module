@@ -68,7 +68,7 @@ ignitionModule {
 
     applyInductiveArtifactRepo = true
 	// Set skipModlSigning to the value of gradle.properties value 'ignition.signing.skipModuleSigning' or default to 'false
-	skipModlSigning = project.hasProperty('ignition.signing.skipModuleSigning') ? project['ignition.signing.skipModuleSigning'].toBoolean() : false
+	skipModlSigning = project.hasProperty('ignition.signing.skipModuleSigning') ? project['ignition.signing.skipModuleSigning'].toBoolean() : true
     /*
      * Optional 'documentation' settings.  Supply the files that would be desired to end up in the 'doc' dir of the
      * assembled module, and specify the path to the index.html file inside that folder. In this commented-out
