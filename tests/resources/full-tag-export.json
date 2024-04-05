@@ -1,0 +1,302 @@
+{
+	"name": "",
+	"tagType": "Provider",
+	"tags": [
+	  {
+		"name": "Exchange",
+		"tagType": "Folder",
+		"tags": [
+		  {
+			"name": "NPEDemo",
+			"tagType": "Folder",
+			"tags": [
+			  {
+				"name": "Machine4",
+				"tagType": "UdtInstance",
+				"tags": [
+				  {
+					"name": "MachineTitle",
+					"tagType": "AtomicTag"
+				  },
+				  {
+					"name": "Status",
+					"tagType": "UdtInstance",
+					"tags": [
+					  {
+						"name": "Status",
+						"tagType": "AtomicTag"
+					  },
+					  {
+						"name": "ModeText",
+						"tagType": "AtomicTag"
+					  },
+					  {
+						"name": "Mode",
+						"tagType": "AtomicTag"
+					  },
+					  {
+						"name": "StatusText",
+						"tagType": "AtomicTag"
+					  },
+					  {
+						"name": "PartCount",
+						"tagType": "AtomicTag"
+					  },
+					  {
+						"name": "CycleTime",
+						"tagType": "AtomicTag"
+					  }
+					]
+				  }
+				],
+				"typeId": "Machine"
+			  },
+			  {
+				"name": "Machine2",
+				"tagType": "UdtInstance",
+				"tags": [
+				  {
+					"name": "MachineTitle",
+					"tagType": "AtomicTag"
+				  },
+				  {
+					"name": "Status",
+					"tagType": "UdtInstance",
+					"tags": [
+					  {
+						"name": "PartCount",
+						"tagType": "AtomicTag"
+					  },
+					  {
+						"name": "Mode",
+						"tagType": "AtomicTag"
+					  },
+					  {
+						"name": "CycleTime",
+						"tagType": "AtomicTag"
+					  },
+					  {
+						"name": "Status",
+						"tagType": "AtomicTag"
+					  },
+					  {
+						"name": "ModeText",
+						"tagType": "AtomicTag"
+					  },
+					  {
+						"name": "StatusText",
+						"tagType": "AtomicTag"
+					  }
+					]
+				  }
+				],
+				"typeId": "Machine"
+			  },
+			  {
+				"name": "Machine3",
+				"tagType": "UdtInstance",
+				"tags": [
+				  {
+					"name": "MachineTitle",
+					"tagType": "AtomicTag"
+				  },
+				  {
+					"name": "Status",
+					"tagType": "UdtInstance",
+					"tags": [
+					  {
+						"name": "CycleTime",
+						"tagType": "AtomicTag"
+					  },
+					  {
+						"name": "PartCount",
+						"tagType": "AtomicTag"
+					  },
+					  {
+						"name": "StatusText",
+						"tagType": "AtomicTag"
+					  },
+					  {
+						"name": "Status",
+						"tagType": "AtomicTag"
+					  },
+					  {
+						"name": "Mode",
+						"tagType": "AtomicTag"
+					  },
+					  {
+						"name": "ModeText",
+						"tagType": "AtomicTag"
+					  }
+					]
+				  }
+				],
+				"typeId": "Machine"
+			  },
+			  {
+				"expression": "0",
+				"name": "ActiveAlarms",
+				"tagType": "AtomicTag",
+				"valueSource": "expr"
+			  },
+			  {
+				"name": "Machine1",
+				"tagType": "UdtInstance",
+				"tags": [
+				  {
+					"name": "MachineTitle",
+					"tagType": "AtomicTag"
+				  },
+				  {
+					"name": "Status",
+					"tagType": "UdtInstance",
+					"tags": [
+					  {
+						"name": "StatusText",
+						"tagType": "AtomicTag"
+					  },
+					  {
+						"name": "ModeText",
+						"tagType": "AtomicTag"
+					  },
+					  {
+						"name": "CycleTime",
+						"tagType": "AtomicTag"
+					  },
+					  {
+						"name": "Status",
+						"tagType": "AtomicTag"
+					  },
+					  {
+						"name": "PartCount",
+						"tagType": "AtomicTag"
+					  },
+					  {
+						"name": "Mode",
+						"tagType": "AtomicTag"
+					  }
+					]
+				  }
+				],
+				"typeId": "Machine"
+			  }
+			]
+		  }
+		]
+	  },
+	  {
+		"name": "_types_",
+		"tagType": "Folder",
+		"tags": [
+		  {
+			"name": "Data",
+			"tagType": "UdtType",
+			"tags": [
+			  {
+				"name": "ScrewPosition",
+				"tagType": "AtomicTag",
+				"valueSource": "opc"
+			  }
+			],
+			"typeId": ""
+		  },
+		  {
+			"name": "Temp",
+			"tagType": "UdtType",
+			"typeId": ""
+		  },
+		  {
+			"name": "Machine",
+			"tagType": "UdtType",
+			"tags": [
+			  {
+				"dataType": "String",
+				"name": "MachineTitle",
+				"tagType": "AtomicTag",
+				"value": "",
+				"valueSource": "memory"
+			  },
+			  {
+				"name": "Status",
+				"tagType": "UdtInstance",
+				"tags": [
+				  {
+					"name": "CycleTime",
+					"tagType": "AtomicTag"
+				  },
+				  {
+					"name": "PartCount",
+					"tagType": "AtomicTag"
+				  },
+				  {
+					"name": "Mode",
+					"tagType": "AtomicTag"
+				  },
+				  {
+					"name": "StatusText",
+					"tagType": "AtomicTag"
+				  },
+				  {
+					"name": "ModeText",
+					"tagType": "AtomicTag"
+				  },
+				  {
+					"name": "Status",
+					"tagType": "AtomicTag"
+				  }
+				],
+				"typeId": "Status"
+			  }
+			]
+		  },
+		  {
+			"name": "Status",
+			"tagType": "UdtType",
+			"tags": [
+			  {
+				"name": "PartCount",
+				"tagType": "AtomicTag",
+				"value": 0,
+				"valueSource": "memory"
+			  },
+			  {
+				"name": "Mode",
+				"tagType": "AtomicTag",
+				"value": 0,
+				"valueSource": "memory"
+			  },
+			  {
+				"dataType": "Float8",
+				"formatString": "#,##0.###",
+				"name": "CycleTime",
+				"tagType": "AtomicTag",
+				"value": 0.0,
+				"valueSource": "memory"
+			  },
+			  {
+				"name": "Status",
+				"tagType": "AtomicTag",
+				"value": 0,
+				"valueSource": "memory"
+			  },
+			  {
+				"dataType": "String",
+				"expression": "switch(\r\n{[.]Status},\r\n0, 1, 2, 3, 4,\r\n\"PowerOff\",\r\n\"Operating\",\r\n\"Stop\",\r\n\"Alarm\",\r\n\"Automatic Mode Disabled\",\r\n\"\")",
+				"name": "StatusText",
+				"tagType": "AtomicTag",
+				"valueSource": "expr"
+			  },
+			  {
+				"dataType": "String",
+				"expression": "switch(\r\n{[.]Mode},\r\n0, 1, 2, 4, 8, 16, 24,\r\n\"Initial value\",\r\n\"ModeOff\",\r\n\"Stand-by\",\r\n\"Manual\",\r\n\"Semi-Automatic\",\r\n\"Automatic\",\r\n\"Semi\u0026Full-automatic\",\r\n\"\")",
+				"name": "ModeText",
+				"tagType": "AtomicTag",
+				"valueSource": "expr"
+			  }
+			],
+			"typeId": ""
+		  }
+		]
+	  }
+	]
+  }

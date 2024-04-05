@@ -4,84 +4,90 @@ This module is used to enable CICD practices for Ignition tags. It enables the c
 
 ## API Endpoints
 
-### Export Tags To String
+### Export Tags
 
 `GET /data/tag-cicd/tags/export`
 
-#### Parameters
-
-| Name | Type | Description |
-| ---- | ---- | ----------- |
-| `provider` | `string` | The tag provider to export from. |
-| `baseTagPath` | `string` | The base tag path to start the export from. |
-| `recursive` | `boolean` | If true, will recursively search the `baseTagPath` for tags. If false, will only search for the direct children of `baseTagPath` for tags. |
-| `localPropsOnly` | `boolean` | Set to True to only return configuration created by a user (aka no inherited properties). Useful for tag export and tag UI edits of raw JSON text. |
-
-#### Response
-
-The response will be a `json` file containing the exported tags.
-
-### Export Tags To File
-
-`POST /data/tag-cicd/tags/export-file`
+This endpoint exports the tag configuration as a JSON string.
 
 #### Parameters
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
-| `provider` | `string` | The tag provider to export from. |
-| `baseTagPath` | `string` | The base tag path to start the export from. |
-| `recursive` | `boolean` | If true, will recursively search the `baseTagPath` for tags. If false, will only search for the direct children of `baseTagPath` for tags. |
-| `localPropsOnly` | `boolean` | Set to True to only return configuration created by a user (aka no inherited properties). Useful for tag export and tag UI edits of raw JSON text. |
-| `filePath` | `string` | The file path to export the tags to, local to the Ignition Gateway |
-| `individualFilesPerObject` | `boolean` | If true, will export each tag to a separate file in a folder structure representative of the tag configuration model. If false, will export all tags to a single file. |
+| `provider` | `string` | The tag provider to export from. If not specified, defaults to the `DEFAULT_PROVIDER`. |
+| `baseTagPath` | `string` | The base tag path to start the export from. If not specified, defaults to an empty string, which means the export will start from the root of the tag provider. |
+| `recursive` | `boolean` | If `true`, the export will recursively include all tags and folders under the `baseTagPath`. If `false`, only the direct children of the `baseTagPath` will be exported. |
+| `localPropsOnly` | `boolean` | If `true`, only the local properties of the tags will be exported (user-created configuration). If `false`, all properties (including inherited properties) will be exported. |
+
+#### Example Usage
+
+```sh
+curl "https://tag-cicd.localtest.me/data/tag-cicd/tags/export?provider=default&baseTagPath=MyTagFolder&recursive=true&localPropsOnly=true"
+```
 
 #### Response
 
-The response will be the `json` string of the exported tags. This is the same as the `Export Tags To String` endpoint.
+The response will be a JSON string containing the exported tag configuration.
 
-The file will be created at the `filePath` specified in the request.
+### Export Tags to File
+
+`POST /data/tag-cicd/tags/export`
+
+This endpoint exports the tag configuration and saves it to a specified file path on the Ignition gateway server.
+
+#### Parameters
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| `provider` | `string` | The tag provider to export from. If not specified, defaults to the `DEFAULT_PROVIDER`. |
+| `baseTagPath` | `string` | The base tag path to start the export from. If not specified, defaults to an empty string, which means the export will start from the root of the tag provider. |
+| `recursive` | `boolean` | If `true`, the export will recursively include all tags and folders under the `baseTagPath`. If `false`, only the direct children of the `baseTagPath` will be exported. |
+| `localPropsOnly` | `boolean` | If `true`, only the local properties of the tags will be exported (user-created configuration). If `false`, all properties (including inherited properties) will be exported. |
+| `filePath` | `string` | The file path on the Ignition gateway server where the exported tag configuration will be saved. This parameter is required. |
+| `individualFilesPerObject` | `boolean` | If `true`, the export will create individual JSON files for each tag and folder, maintaining the tag hierarchy. If `false`, the entire tag configuration will be exported as a single JSON file. |
+
+#### Example Usage
+
+```sh
+curl -X POST "http://tag-cicd.localtest.me/data/tag-cicd/tags/export?provider=default&baseTagPath=MyTagFolder&recursive=true&localPropsOnly=true&filePath=data/projects/my-project/tags.json&individualFilesPerObject=false"
+```
+
+#### Response
+
+The response will be a JSON string containing the exported tag configuration, similar to the `Export Tags` endpoint. The exported tag configuration will also be saved to the specified `filePath` on the Ignition gateway server.
 
 ### Import Tags
 
 `POST /data/tag-cicd/tags/import`
 
+This endpoint imports a tag configuration from a JSON string in the request body.
+
 #### Parameters
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
-| `provider` | `string` | The tag provider to import to. |
-| `baseTagPath` | `string` | The base tag path to start the import to. |
-| `collisionPolicy` | `string` | The collision policy to use when importing tags. Possible values are `a`, `o`, `u`, `d`. `d` is added for this module, and its purpose is to do a hard switch of the tags being imported. It will delete any tags found underneath the `baseTagPath` that are not in your import file. |
+| `provider` | `string` | The tag provider to import into. If not specified, it will be determined from the JSON payload. If the JSON payload does not specify a provider, the `DEFAULT_PROVIDER` will be used. |
+| `baseTagPath` | `string` | The base tag path where the imported tags will be created/updated. If not specified, defaults to an empty string, which means the tags will be imported at the root of the tag provider. |
+| `collisionPolicy` | `string` | The collision policy to use when importing tags. Valid values are: `"a"` (abort), `"o"` (overwrite), `"u"` (update), and `"d"` (delete and overwrite). If not specified, defaults to `"a"`. |
+| `filePath` | `string` | The file path on the Ignition gateway server from where the tag configuration will be imported. This parameter is required when `individualFilesPerObject` is `true`. |
+| `individualFilesPerObject` | `boolean` | If `true`, the import will expect individual JSON files for each tag and folder, maintaining the tag hierarchy. The `filePath` parameter should point to the directory containing the JSON files. If `false`, the import will expect a single JSON file containing the entire tag configuration. |
 
-#### Body
+#### Example Usage
 
-The body of the request should be a `json` file export of the tags you want to import. The format of the file should be the same as the export file from either the `Export Tags` endpoint or the `Export Tags` button in the Ignition Designer.
+```sh
+curl -X POST -H "Content-Type: application/json" -d @path/to/tag_configuration.json "http://tag-cicd.localtest.me/data/tag-cicd/tags/import?provider=default&baseTagPath=MyTagFolder&collisionPolicy=o"
+```
+
+#### Request Body
+
+The request body should be a JSON string representing the tag configuration to import. The format of the JSON depends on the value of `individualFilesPerObject`:
+
+- If `individualFilesPerObject` is `false`, the request body should be a single JSON object representing the entire tag configuration.
+- If `individualFilesPerObject` is `true`, the request body should be omitted, and the tag configuration will be imported from individual JSON files located at the specified `filePath`.
 
 #### Response
 
-The response will be a list of qualified values describing if each tag import was successful.
-
-### How to use
-
-1. Checkout Branch
-2. Import Branch Tags:
-   1. Replace `tag_configuration.json` with your exported tag file path (leave the `@` in front of the file name)
-   2. Replace `<my_gateway_url>` with your gateway url
-
-```sh
-curl -X POST -H "Content-Type: application/json" -d @tag_configuration.json https://<my_gateway_url>/data/tag-cicd/tags/import\?collisionPolicy\=d
-```
-
-3. Make Changes
-4. Export Branch Tags:
-   1. Replace `<my_gateway_url>` with your gateway url
-
-```sh
-curl https://<my_gateway_url>/data/tag-cicd/tags/export\?recursive\=true -o tag_configuration.json
-```
-1. Add & Commit changes to branch
-2. Push to repo
+The response will be a JSON object containing the results of the import operation, including the created and deleted tags.
 
 ## Building the Module
 
@@ -101,7 +107,7 @@ Once the `gradle.properties` file has been filled out, the module can be built b
 ./gradlew build
 ```
 
-### Environment Setup
+### Example Environment Setup
 
 #### Leveraging SDKMAN
 
@@ -123,9 +129,9 @@ sdk install java java 11.0.22-zulu
 sdk install gradle 6.8.2
 ```
 
-4. If you are going to deploy to a gateway with non-standard certificates installed, you will need to add the gateway's certificate to the Java truststore. This can be done by running the following
+4. If you are going to deploy to a gateway with non-standard certificates installed, you will need to add the gateway's certificate to the Java truststore. This can be done by running the following commands:
 
-```shc
-keytool -import -alias root_ca -file /path/to/root_ca.crt -keystore ~/.sdkman/candidates/java/current/lib/security/cacertss -storepass changeit
-keytool -import -alias server_cert -file /path/to/server.crt -keystore ~/.sdkman/candidates/java/current/lib/security/cacertss -storepass changeit
+```sh
+keytool -import -alias root_ca -file /path/to/root_ca.crt -keystore ~/.sdkman/candidates/java/current/lib/security/cacerts -storepass changeit
+keytool -import -alias server_cert -file /path/to/server.crt -keystore ~/.sdkman/candidates/java/current/lib/security/cacerts -storepass changeit
 ```

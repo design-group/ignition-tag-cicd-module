@@ -144,9 +144,9 @@ public class TagImportRoutes {
 	}
 
 	private void importTags(String provider, String basePath, CollisionPolicy collisionPolicy, JsonObject createdTags, JsonObject tagsJson) {
-		TagPath baseBatePath = new BasicTagPath(provider);
+		TagPath baseTagPath = new BasicTagPath(provider);
 		if (!basePath.isEmpty()) {
-			baseBatePath = baseBatePath.getChildPath(basePath);
+			baseTagPath = baseTagPath.getChildPath(basePath);
 		}
 
 		// Sort the tags and UDT types
@@ -155,10 +155,11 @@ public class TagImportRoutes {
 		// Import the _types_ folder first, if present
 		JsonArray udtTypes = sortedTagsJson.getAsJsonArray("udtTypes");
 		if (udtTypes != null) {
-			TagPath typesPath = baseBatePath.getChildPath(TagConfigUtilities.UDT_TYPES_FOLDER);
+			TagPath typesPath = baseTagPath.getChildPath(TagConfigUtilities.UDT_TYPES_FOLDER);
 			for (JsonElement udtType : udtTypes) {
 				JsonObject udtTypeObject = udtType.getAsJsonObject();
 				List<QualityCode> qualityCodes = tagManager.importTagsAsync(typesPath, TagUtilities.jsonToString(udtTypeObject), "json", collisionPolicy).join();
+				
 				createdTags.add(typesPath.toString(), TagConfigUtilities.convertQualityCodesToArray(qualityCodes));
 			}
 		}
@@ -167,29 +168,8 @@ public class TagImportRoutes {
 		JsonArray tags = sortedTagsJson.getAsJsonArray("tags");
 		if (tags != null) {
 			String tagsJsonString = TagUtilities.jsonToString(tagsJson);
-			List<QualityCode> qualityCodes = tagManager.importTagsAsync(baseBatePath, tagsJsonString, "json", collisionPolicy).join();
-			createdTags.add(baseBatePath.toString(), TagConfigUtilities.convertQualityCodesToArray(qualityCodes));
-		}
-	}
-
-	private void importFolderTags(String provider, TagPath folderPath, CollisionPolicy collisionPolicy, JsonObject createdTags, JsonObject folderJson) {
-		JsonArray tags = folderJson.getAsJsonArray("tags");
-		if (tags != null) {
-			for (JsonElement tagElement : tags) {
-				JsonObject tag = tagElement.getAsJsonObject();
-				String tagType = tag.get("tagType").getAsString();
-
-				TagPath tagPath = folderPath;
-				if (tagType.equals("Folder")) {
-					tagPath = tagPath.getChildPath(tag.get("name").getAsString());
-					importFolderTags(provider, tagPath, collisionPolicy, createdTags, tag);
-				} else if (tagType.equals("UdtType") || tagType.equals("UdtInstance")) {
-					importTags(provider, tagPath.toString(), collisionPolicy, createdTags, tag);
-				} else {
-					List<QualityCode> qualityCodes = tagManager.importTagsAsync(tagPath, TagUtilities.jsonToString(tag), "json", collisionPolicy).join();
-					createdTags.add(tagPath.toString(), TagConfigUtilities.convertQualityCodesToArray(qualityCodes));
-				}
-			}
+			List<QualityCode> qualityCodes = tagManager.importTagsAsync(baseTagPath, tagsJsonString, "json", collisionPolicy).join();
+			createdTags.add(baseTagPath.toString(), TagConfigUtilities.convertQualityCodesToArray(qualityCodes));
 		}
 	}
 

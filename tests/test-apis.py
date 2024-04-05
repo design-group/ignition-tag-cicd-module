@@ -8,67 +8,89 @@ It will test the following:
 - Export the tags in the multi-folder format and compare it to the original
 """
 
-import pytest
 import os
-import json
+import pytest
 import requests
+import json
+import filecmp
 
-NATIVE_EXPORT_PATH = "resources/native-tag-export.json"
-TEST_GATEWAY_ADDRESS = "https://tag-cicd.localtest.me"
+BASE_URL = "https://tag-cicd.localtest.me/data/tag-cicd"
+HOST_BASE_PATH = "docker/temp/ignition-data/tags"
+CONTAINER_BASE_PATH = "data/tags"
+FULL_TAG_FILE = "tests/resources/full-tag-export.json"
 
-EXPORT_TAGS_ENDPOINT = "/data/tag-cicd/tags/export"
-IMPORT_TAGS_ENDPOINT = "/data/tag-cicd/tags/import"
+EXPORT_TYPES_FILE = "_types_.json"
+EXPORT_EXCHANGE_FILE = "Exchange.json"
+EXPORT_SINGLE_FILE = "single.json"
+EXPORT_MULTI_FILE_DIR = "multi-tags"
 
-def read_json_file(file_path):
-	"""
-	Reads a JSON file and returns the data as a dictionary
-	"""
-	with open(file_path, "r") as f:
-		data = json.load(f)
-	return data
+@pytest.fixture(autouse=True)
+def cleanup():
+    # Delete all tags before each test
+    delete_all_tags()
 
-def read_native_export():
-	"""
-	Reads the original native export file and returns the data as a dictionary
-	"""
-	return read_json_file(os.path.join(os.path.dirname(__file__), NATIVE_EXPORT_PATH))
+def delete_all_tags():
+    # TODO: Implement the logic to delete all tags
+    pass
 
+def test_import_export_full_tag_file():
+    # Import the full tag file
+    with open(FULL_TAG_FILE, "r") as file:
+        tags_data = file.read()
 
-def test_native_tag_import():
-	"""
-	Tests the import of a native Ignition tag export file
-	"""
-	# Read the original native export file
-	original_data = read_native_export()
+    response = requests.post(f"{BASE_URL}/tags/import?provider=default&baseTagPath=&collisionPolicy=o&importType=json", data=tags_data, verify=False)
+    assert response.status_code == 200
 
-	# Import the native export file
-	import_response = requests.post(TEST_GATEWAY_ADDRESS + IMPORT_TAGS_ENDPOINT + "?collisionPolicy=d", json=original_data, verify=False)
+    # Export the tags into a full file              
+    response = requests.post(f"{BASE_URL}/tags/export?provider=default&baseTagPath=&recursive=true&localPropsOnly=true&filePath={CONTAINER_BASE_PATH}/{EXPORT_SINGLE_FILE}", verify=False)
+    assert response.status_code == 200
 
-	assert import_response.status_code == 200
+    # Compare the json contents of the original and exported files
+    with open(FULL_TAG_FILE, "r") as file:
+        original_data = json.loads(file.read())
+    with open(f"{HOST_BASE_PATH}/{EXPORT_SINGLE_FILE}", "r") as file:
+        exported_data = json.loads(file.read())
+    assert original_data == exported_data
 
+def test_export_consistency():
+    # Import the full tag file
+    with open(FULL_TAG_FILE, "r") as file:
+        tags_data = file.read()
 
-def test_native_tag_export():
-	"""
-	Tests the export of a native Ignition tag export file
-	"""
-	# Read the original native export file
-	original_data = read_native_export()
+    response = requests.post(f"{BASE_URL}/tags/import?provider=default&baseTagPath=&collisionPolicy=o&importType=json", data=tags_data, verify=False)
+    assert response.status_code == 200
 
-	# Import the native export file
-	export_string = requests.get(TEST_GATEWAY_ADDRESS + EXPORT_TAGS_ENDPOINT + "?recursive=true", verify=False).text
-	export_data = json.loads(export_string)
-	# Compare the imported data to the original data
-	try:
-		assert export_data == original_data
-	except AssertionError:
-		# Write the export data to a file for debugging
-		with open("out/failed-export.json", "w") as f:
-			json.dump(export_data, f, indent=4)
-		
-		# Write the original data to a file for debugging
-		with open("out/original-export.json", "w") as f:
-			json.dump(original_data, f, indent=4)
-		raise
+    # Export the tags multiple times and compare the files
+    export_files = []
+    for i in range(3):
+        export_file = f"export_{i}.json"
+        response = requests.post(f"{BASE_URL}/tags/export?provider=default&baseTagPath=&recursive=true&localPropsOnly=true&filePath={CONTAINER_BASE_PATH}/{export_file}", verify=False)
+        assert response.status_code == 200
+        export_files.append(export_file)
 
-if __name__ == '__main__':
+    # Compare the exported files
+    for i in range(len(export_files) - 1):
+        assert filecmp.cmp(f"{HOST_BASE_PATH}/{export_files[i]}", f"{HOST_BASE_PATH}/{export_files[i+1]}")
+
+def sort_json(data):
+    if isinstance(data, dict):
+        return {key: sort_json(value) for key, value in sorted(data.items())}
+    elif isinstance(data, list):
+        return [sort_json(item) for item in data]
+    else:
+        return data
+
+def test_export_multi_folder_format():
+    # Import the full tag file
+    with open(FULL_TAG_FILE, "r") as file:
+        tags_data = file.read()
+
+    response = requests.post(f"{BASE_URL}/tags/import?provider=default&baseTagPath=&collisionPolicy=o&importType=json", data=tags_data, verify=False)
+    assert response.status_code == 200
+
+    # Export the tags in multi-folder format
+    response = requests.post(f"{BASE_URL}/tags/export?provider=default&baseTagPath=&recursive=true&individualFilesPerObject=true&localPropsOnly=true&filePath={CONTAINER_BASE_PATH}/{EXPORT_MULTI_FILE_DIR}", verify=False)
+    assert response.status_code == 200
+
+if __name__ == "__main__":
 	pytest.main(["-s", __file__])

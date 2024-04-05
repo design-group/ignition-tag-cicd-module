@@ -47,9 +47,11 @@ public class TagConfigUtilities {
 			baseTagPath = new BasicTagPath(provider, List.of(tagPath));
 		}
 		
-		logger.info("Requesting tag configuration for provider " + provider + " and tag path " + baseTagPath.toString() + " with recursive=" + recursive + " and localPropsOnly=" + localPropsOnly);
+		logger.trace("Requesting tag configuration for provider " + provider + " and tag path " + baseTagPath.toString() + " with recursive=" + recursive + " and localPropsOnly=" + localPropsOnly);
 
 		TagConfigurationModel tagConfigurationModel = tagManager.getTagProvider(provider).getTagConfigsAsync(List.of(baseTagPath), recursive, localPropsOnly).join().get(0);
+
+		logger.trace("Tag configuration model for provider " + provider + " and tag path " + baseTagPath.toString() + " with recursive=" + recursive + " and localPropsOnly=" + localPropsOnly + " is: " + tagConfigurationModel.toString());
 
 		return tagConfigurationModel;
 	}
@@ -64,6 +66,9 @@ public class TagConfigUtilities {
 	 * @return a list of quality codes for the deleted tags
 	 */
 	public static List<QualityCode> deleteTagsInConfigurationModel(GatewayTagManager tagManager, String provider, TagPath baseTagPath, TagConfigurationModel tagConfigurationModel) {
+
+		logger.trace("Deleting tags in configuration model for provider " + provider + " and tag path " + baseTagPath.toString() + " in configuration model: " + tagConfigurationModel.toString());
+
 		List<TagConfigurationModel> configModelChildren = tagConfigurationModel.getChildren();
 		List<TagPath> tagPaths =  new ArrayList<TagPath>();
 		List<QualityCode> deleteResults = new ArrayList<QualityCode>();
@@ -71,6 +76,7 @@ public class TagConfigUtilities {
 		logger.info("Found " + configModelChildren.size() + " tags to delete from provider " + provider);
 
 		for (TagConfigurationModel configModelChild : configModelChildren) {
+			logger.info("Checking tag path " + configModelChild.getPath().toString() + " for _types_ folder");
 			if (configModelChild.getPath().toString().equals(UDT_TYPES_FOLDER)) {
 				// Delete every tag in the `_types_` folder
 				logger.info("Found _types_ folder, deleting all tags in folder");

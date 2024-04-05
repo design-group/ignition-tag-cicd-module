@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 
 import com.bwdesigngroup.ignition.tag_cicd.gateway.web.routes.TagExportRoutes;
 import com.bwdesigngroup.ignition.tag_cicd.gateway.web.routes.TagImportRoutes;
+import com.bwdesigngroup.ignition.tag_cicd.gateway.web.routes.TagDeleteRoutes;
 import com.inductiveautomation.ignition.common.licensing.LicenseState;
 import com.inductiveautomation.ignition.common.project.resource.adapter.ResourceTypeAdapter;
 import com.inductiveautomation.ignition.common.project.resource.adapter.ResourceTypeAdapterRegistry;
@@ -97,6 +98,7 @@ public class TagCICDGatewayHook extends AbstractGatewayModuleHook {
 		logger.info("Mounting route handlers for TagCICDGatewayHook");
 		new TagExportRoutes(context, routes).mountRoutes();
 		new TagImportRoutes(context, routes).mountRoutes();
+		new TagDeleteRoutes(context, routes).mountRoutes();
     }
 
     /**

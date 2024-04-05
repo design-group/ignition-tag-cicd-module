@@ -205,7 +205,16 @@ public class TagExportRoutes {
 			logger.trace("individualFilesPerObject: " + individualFilesPerObject);
 
 			// Create the directory structure
-			File directory = new File(filePath);
+			// We must make sure that the path isnt a file path, and either has no extension, or ends with a '/'
+			String directoryPath = filePath;
+			if (directoryPath.contains(".")) {
+				directoryPath = directoryPath.substring(0, directoryPath.lastIndexOf("/"));
+			}
+			if (!directoryPath.endsWith("/")) {
+				directoryPath += "/";
+			}
+
+			File directory = new File(directoryPath);
 			if (!directory.exists()) {
 				boolean created = directory.mkdirs();
 				if (!created) {
