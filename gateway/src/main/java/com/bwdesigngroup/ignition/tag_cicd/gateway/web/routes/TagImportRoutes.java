@@ -11,6 +11,7 @@ import static com.inductiveautomation.ignition.gateway.dataroutes.RouteGroup.TYP
 
 import java.io.IOException;
 import java.util.List;
+import java.io.File;
 
 import javax.servlet.http.HttpServletResponse;
 
@@ -19,9 +20,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.bwdesigngroup.ignition.tag_cicd.common.TagConfigUtilities;
+import com.bwdesigngroup.ignition.tag_cicd.common.TagImportUtilities;
 import com.bwdesigngroup.ignition.tag_cicd.common.WebUtilities;
+import com.bwdesigngroup.ignition.tag_cicd.common.FileUtilities;
 import com.inductiveautomation.ignition.common.gson.JsonElement;
 import com.inductiveautomation.ignition.common.gson.JsonObject;
+import com.inductiveautomation.ignition.common.gson.JsonArray;
 import com.inductiveautomation.ignition.common.model.values.QualityCode;
 import com.inductiveautomation.ignition.common.tags.TagUtilities;
 import com.inductiveautomation.ignition.common.tags.config.CollisionPolicy;
@@ -80,97 +84,135 @@ public class TagImportRoutes {
 	 * @throws JSONException if there is an error parsing the JSON string
 	 * @throws IOException   if there is an error reading the request body
 	 */
-	public JsonObject importTagConfiguration(RequestContext requestContext, HttpServletResponse httpServletResponse)
-			throws JSONException, IOException {
-		// Read the tag configuration from the request body
-		String tagConfiguration = requestContext.readBody();
-
-		// If the tag configuration is empty, return an error
-		if (tagConfiguration.isEmpty()) {
-			return WebUtilities.getBadRequestError(httpServletResponse, "Tag configuration is empty");
-		}
-
-		JsonObject tagConfigurationJson = (JsonObject) TagUtilities.stringToJson(tagConfiguration);
-		// If tagConfiguration is not valid JSON, return an error
-		if (!tagConfigurationJson.isJsonObject()) {
-			return WebUtilities.getBadRequestError(httpServletResponse, "Tag configuration is not valid JSON");
-		}
-
-		// If the first `tagType` key is "Provider", then we can use that for the
-		// provider
-		// If not, we will use the provider specified in the request
-		String provider = tagConfigurationJson.get("tagType").getAsString();
-		if (!provider.equals("Provider")) {
-			provider = requestContext.getParameter("provider");
-
-			if (provider == null) {
-				return WebUtilities.getBadRequestError(httpServletResponse,
-						"Provider is not specified, and tag configuration does not contain a provider");
+	public JsonObject importTagConfiguration(RequestContext requestContext, HttpServletResponse httpServletResponse) {
+		JsonObject responseObject = new JsonObject();
+		try {
+			String provider = getProvider(requestContext);
+			String collisionPolicyString = requestContext.getParameter("collisionPolicy");
+			String basePath = requestContext.getParameter("baseTagPath");
+			if (basePath == null) {
+				basePath = "";
 			}
-		} else {
-			provider = tagConfigurationJson.get("name").getAsString();
+
+			Boolean deleteTags = collisionPolicyString.equals("d");
+			CollisionPolicy collisionPolicy = getCollisionPolicy(collisionPolicyString, deleteTags);
+
+			JsonObject createdTags = new JsonObject();
+			JsonObject deletedTags = new JsonObject();
+
+			if (deleteTags) {
+				logger.info("Deleting all tags in provider " + provider + " before importing");
+				TagConfigurationModel baseTagsConfigurationModel = TagConfigUtilities.getTagConfigurationModel(tagManager, provider, basePath, true, false);
+				List<QualityCode> deletedUdtQualityCodes = TagConfigUtilities.deleteTagsInConfigurationModel(tagManager, provider, new BasicTagPath(provider), baseTagsConfigurationModel);
+				deletedTags.add(basePath, TagConfigUtilities.convertQualityCodesToArray(deletedUdtQualityCodes));
+			}
+
+			String filePath = requestContext.getParameter("filePath");
+			Boolean individualFilesPerObject = Boolean.parseBoolean(requestContext.getParameter("individualFilesPerObject"));
+
+			if (individualFilesPerObject) {
+				File directory = new File(filePath);
+				File[] files = directory.listFiles();
+				if (files != null) {
+					// Import the _types_ folder first, if present
+					File typesFolder = FileUtilities.findTypesFolder(files);
+					if (typesFolder != null) {
+						JsonObject folderJson = TagImportUtilities.readTagsFromDirectory(typesFolder.getAbsolutePath());
+						importTags(provider, basePath, collisionPolicy, createdTags, folderJson);
+					}
+
+					// Import the rest of the folders
+					for (File file : files) {
+						if (file.isDirectory() && !file.equals(typesFolder)) {
+							JsonObject folderJson = TagImportUtilities.readTagsFromDirectory(file.getAbsolutePath());
+							importTags(provider, basePath, collisionPolicy, createdTags, folderJson);
+						}
+					}
+				}
+			} else {
+				JsonObject tagConfigurationJson = (JsonObject) TagUtilities.stringToJson(requestContext.readBody());
+				importTags(provider, basePath, collisionPolicy, createdTags, tagConfigurationJson);
+			}
+
+			TagConfigUtilities.addQualityCodesToJsonObject(responseObject, deletedTags, "deleted_tags");
+			TagConfigUtilities.addQualityCodesToJsonObject(responseObject, createdTags, "created_tags");
+		} catch (Exception e) {
+			logger.error("Error importing tag configuration on line: " + e.toString(), e);
+			responseObject = WebUtilities.getInternalServerErrorResponse(httpServletResponse, e);
+		}
+		return responseObject;
+	}
+
+	private void importTags(String provider, String basePath, CollisionPolicy collisionPolicy, JsonObject createdTags, JsonObject tagsJson) {
+		TagPath baseBatePath = new BasicTagPath(provider);
+		if (!basePath.isEmpty()) {
+			baseBatePath = baseBatePath.getChildPath(basePath);
 		}
 
-		// If provider is not specified, default to DEFAULT_PROVIDER
-		if (provider == null || provider.isEmpty()) {
-			provider = TagConfigUtilities.DEFAULT_PROVIDER;
+		// Sort the tags and UDT types
+		JsonObject sortedTagsJson = TagConfigUtilities.sortTagsAndUdtTypes(tagsJson);
+
+		// Import the _types_ folder first, if present
+		JsonArray udtTypes = sortedTagsJson.getAsJsonArray("udtTypes");
+		if (udtTypes != null) {
+			TagPath typesPath = baseBatePath.getChildPath(TagConfigUtilities.UDT_TYPES_FOLDER);
+			for (JsonElement udtType : udtTypes) {
+				JsonObject udtTypeObject = udtType.getAsJsonObject();
+				List<QualityCode> qualityCodes = tagManager.importTagsAsync(typesPath, TagUtilities.jsonToString(udtTypeObject), "json", collisionPolicy).join();
+				createdTags.add(typesPath.toString(), TagConfigUtilities.convertQualityCodesToArray(qualityCodes));
+			}
 		}
 
-		String collisionPolicyString = requestContext.getParameter("collisionPolicy");
-
-		String basePath = requestContext.getParameter("baseTagPath");
-		if (basePath == null) {
-			basePath = "";
+		// Import the rest of the tags, including the folder structure
+		JsonArray tags = sortedTagsJson.getAsJsonArray("tags");
+		if (tags != null) {
+			String tagsJsonString = TagUtilities.jsonToString(tagsJson);
+			List<QualityCode> qualityCodes = tagManager.importTagsAsync(baseBatePath, tagsJsonString, "json", collisionPolicy).join();
+			createdTags.add(baseBatePath.toString(), TagConfigUtilities.convertQualityCodesToArray(qualityCodes));
 		}
+	}
 
-		// If the `collisionPolicy` is "d" then we will delete the tags before importing
-		// else we will use the collision policy specified in the request
-		Boolean deleteTags = collisionPolicyString.equals("d");
+	private void importFolderTags(String provider, TagPath folderPath, CollisionPolicy collisionPolicy, JsonObject createdTags, JsonObject folderJson) {
+		JsonArray tags = folderJson.getAsJsonArray("tags");
+		if (tags != null) {
+			for (JsonElement tagElement : tags) {
+				JsonObject tag = tagElement.getAsJsonObject();
+				String tagType = tag.get("tagType").getAsString();
 
-		// If collisionPolicy is not specified, default to "a"
+				TagPath tagPath = folderPath;
+				if (tagType.equals("Folder")) {
+					tagPath = tagPath.getChildPath(tag.get("name").getAsString());
+					importFolderTags(provider, tagPath, collisionPolicy, createdTags, tag);
+				} else if (tagType.equals("UdtType") || tagType.equals("UdtInstance")) {
+					importTags(provider, tagPath.toString(), collisionPolicy, createdTags, tag);
+				} else {
+					List<QualityCode> qualityCodes = tagManager.importTagsAsync(tagPath, TagUtilities.jsonToString(tag), "json", collisionPolicy).join();
+					createdTags.add(tagPath.toString(), TagConfigUtilities.convertQualityCodesToArray(qualityCodes));
+				}
+			}
+		}
+	}
+
+	private String getProvider(RequestContext requestContext) throws JSONException, IOException {
+		String provider = requestContext.getParameter("provider");
+		if (provider == null) {
+			JsonObject tagConfigurationJson = (JsonObject) TagUtilities.stringToJson(requestContext.readBody());
+			String tagType = tagConfigurationJson.get("tagType").getAsString();
+			if (tagType.equals("Provider")) {
+				provider = tagConfigurationJson.get("name").getAsString();
+			} else {
+				provider = TagConfigUtilities.DEFAULT_PROVIDER;
+			}
+		}
+		return provider;
+	}
+
+	private CollisionPolicy getCollisionPolicy(String collisionPolicyString, Boolean deleteTags) {
 		if (collisionPolicyString.isEmpty()) {
 			collisionPolicyString = "a";
 		} else if (deleteTags) {
 			collisionPolicyString = "o";
 		}
-
-		CollisionPolicy collisionPolicy = CollisionPolicy.fromString(collisionPolicyString);
-
-		// Convert the List of QualityCodes to an array of strings
-		JsonObject responseObject = new JsonObject();
-		JsonObject createdTags = new JsonObject();
-		JsonObject deletedTags = new JsonObject();
-
-		// If we are importing at the base path, remove any tags currently there
-		if (deleteTags) {
-			logger.info("Deleting all tags in provider " + provider + " before importing");
-			TagConfigurationModel baseTagsConfigurationModel = TagConfigUtilities.getTagConfigurationModel(tagManager,
-					provider, basePath, true, false);
-			List<QualityCode> deletedUdtQualityCodes = TagConfigUtilities.deleteTagsInConfigurationModel(tagManager,
-					provider, new BasicTagPath(provider), baseTagsConfigurationModel);
-
-			deletedTags.add(basePath, TagConfigUtilities.convertQualityCodesToArray(deletedUdtQualityCodes));
-		}
-
-		// For each tag object in the array tagConfigurationJson.get("tags")
-		for (JsonElement tag : tagConfigurationJson.get("tags").getAsJsonArray()) {
-			JsonObject tagObject = tag.getAsJsonObject();
-
-			TagPath tagPath = new BasicTagPath(provider);
-
-			if (basePath != null && !basePath.isEmpty()) {
-				tagPath = tagPath.getChildPath(basePath);
-			}
-
-			List<QualityCode> createdQualityCodes = tagManager
-					.importTagsAsync(tagPath, TagUtilities.jsonToString(tagObject), "json", collisionPolicy).join();
-			createdTags.add(tagPath.toString(), TagConfigUtilities.convertQualityCodesToArray(createdQualityCodes));
-		}
-
-		// If there were deleted or created tags, add them to the response
-		TagConfigUtilities.addQualityCodesToJsonObject(responseObject, deletedTags, "deleted_tags");
-		TagConfigUtilities.addQualityCodesToJsonObject(responseObject, createdTags, "created_tags");
-		return responseObject;
-
+		return CollisionPolicy.fromString(collisionPolicyString);
 	}
-}
+}  

@@ -125,7 +125,7 @@ sdk install gradle 6.8.2
 
 4. If you are going to deploy to a gateway with non-standard certificates installed, you will need to add the gateway's certificate to the Java truststore. This can be done by running the following
 
-```sh
+```shc
 keytool -import -alias root_ca -file /path/to/root_ca.crt -keystore ~/.sdkman/candidates/java/current/lib/security/cacertss -storepass changeit
 keytool -import -alias server_cert -file /path/to/server.crt -keystore ~/.sdkman/candidates/java/current/lib/security/cacertss -storepass changeit
 ```

@@ -10,23 +10,56 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.inductiveautomation.ignition.common.gson.JsonObject;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
+
 /**
  *
  * @author Keith Gamble
  */
 public class WebUtilities {
 
-	/**
-	 * Returns a jsonObject to represent an HTTP error of status 400.
-	 * 
-	 * @param httpServletResponse the HttpServletResponse to set the status code on
-	 * @param message the message to include in the error response
-	 * @return a jsonObject to represent an HTTP error of status 400
-	 */
-	public static JsonObject getBadRequestError(HttpServletResponse httpServletResponse, String message) {
-		httpServletResponse.setStatus(400);
-		JsonObject json = new JsonObject();
-		json.addProperty("error", message);
-		return json;
-	}
+    /**
+     * Returns a jsonObject to represent an HTTP error of status 400.
+     * 
+     * @param httpServletResponse the HttpServletResponse to set the status code on
+     * @param message the message to include in the error response
+     * @return a jsonObject to represent an HTTP error of status 400
+     */
+    public static JsonObject getBadRequestError(HttpServletResponse httpServletResponse, String message) {
+        httpServletResponse.setStatus(400);
+        JsonObject json = new JsonObject();
+        json.addProperty("error", message);
+        return json;
+    }
+
+    /**
+     * Returns a jsonObject to represent an HTTP error of status 500.
+     * 
+     * @param httpServletResponse the HttpServletResponse to set the status code on
+     * @param message the message to include in the error response
+     * @return a jsonObject to represent an HTTP error of status 500
+     */
+    public static JsonObject getInternalServerErrorResponse(HttpServletResponse httpServletResponse, Exception e) {
+        httpServletResponse.setStatus(500);
+        JsonObject json = new JsonObject();
+        json.addProperty("error", e.getMessage());
+        json.addProperty("errorType", e.getClass().getName());
+
+        // Get the stack trace as a string
+        StringWriter sw = new StringWriter();
+        e.printStackTrace(new PrintWriter(sw));
+        String stackTrace = sw.toString();
+        json.addProperty("stackTrace", stackTrace);
+
+        // Optional: You can also include additional information like line number and module
+        StackTraceElement[] stackTraceElements = e.getStackTrace();
+        if (stackTraceElements.length > 0) {
+            StackTraceElement topElement = stackTraceElements[0];
+            json.addProperty("lineNumber", topElement.getLineNumber());
+            json.addProperty("module", topElement.getClassName());
+        }
+
+        return json;
+    }
 }

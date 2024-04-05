@@ -102,38 +102,41 @@ public class TagExportRoutes {
 	 */
 	public JsonObject getTagConfigurationAsString(RequestContext requestContext,
 			HttpServletResponse httpServletResponse) throws JSONException {
-		String provider = requestContext.getParameter("provider");
-		// If provider is not specified, default to DEFAULT_PROVIDER
-		if (provider == null) {
-			provider = TagConfigUtilities.DEFAULT_PROVIDER;
-		}
-
-		String tagPath = requestContext.getParameter("baseTagPath");
-		// If tagPath is not specified, default to ""
-		if (tagPath == null) {
-			tagPath = "";
-		}
-
-		Boolean recursive = Boolean.parseBoolean(requestContext.getParameter("recursive"));
-
-		Boolean localPropsOnly = Boolean.parseBoolean(requestContext.getParameter("localPropsOnly"));
-
-		JsonObject json = new JsonObject();
-
-		TagConfigurationModel tagConfigurationModel = TagConfigUtilities.getTagConfigurationModel(tagManager, provider,
-				tagPath, recursive, localPropsOnly);
-
+		JsonObject responseObject = new JsonObject();
 		try {
-			json = TagUtilities.toJsonObject(tagConfigurationModel);
-		} catch (Exception e) {
-			logger.error("Error getting tag configuration", e);
-			e.printStackTrace();
-		}
+			String provider = requestContext.getParameter("provider");
+			// If provider is not specified, default to DEFAULT_PROVIDER
+			if (provider == null) {
+				provider = TagConfigUtilities.DEFAULT_PROVIDER;
+			}
 
-		JsonObject deterministic_json = (JsonObject) JsonUtilities.createDeterministicCopy(json);
-		
-		logger.trace("Deterministic JSON: " + deterministic_json);
-		return deterministic_json;
+			String tagPath = requestContext.getParameter("baseTagPath");
+			// If tagPath is not specified, default to ""
+			if (tagPath == null) {
+				tagPath = "";
+			}
+
+			Boolean recursive = Boolean.parseBoolean(requestContext.getParameter("recursive"));
+
+			Boolean localPropsOnly = Boolean.parseBoolean(requestContext.getParameter("localPropsOnly"));
+
+
+			TagConfigurationModel tagConfigurationModel = TagConfigUtilities.getTagConfigurationModel(tagManager, provider,
+					tagPath, recursive, localPropsOnly);
+
+			try {
+				responseObject = TagUtilities.toJsonObject(tagConfigurationModel);
+			} catch (Exception e) {
+				logger.error("Error getting tag configuration", e);
+				e.printStackTrace();
+			}
+
+			responseObject = (JsonObject) JsonUtilities.createDeterministicCopy(responseObject);
+		} catch (Exception e) {
+			logger.error("Error exporting tag configuration to string: " + e.toString(), e);
+			responseObject = WebUtilities.getInternalServerErrorResponse(httpServletResponse, e);
+		}
+		return responseObject;
 	}
 
 	/**
@@ -186,157 +189,51 @@ public class TagExportRoutes {
 	 */
 	public JsonObject saveTagConfigurationToDisc(RequestContext requestContext, HttpServletResponse httpServletResponse)
 			throws JSONException {
-		JsonObject json = getTagConfigurationAsString(requestContext, httpServletResponse);
-
-		String filePath = requestContext.getParameter("filePath");
-		logger.trace("filePath: " + filePath);
-		// If filePath is not specified throw an error
-		if (filePath == null) {
-			throw new IllegalArgumentException("filePath parameter is required");
-		}
-
-		Boolean individualFilesPerObject = Boolean
-				.parseBoolean(requestContext.getParameter("individualFilesPerObject"));
-		logger.trace("individualFilesPerObject: " + individualFilesPerObject);
-
-		String directoryPath = null;
-		// If the filePath does not end in .json, it is a directory
-		if (!filePath.endsWith(".json")) {
-			directoryPath = filePath;
-			// If the filePath does not end in a slash, add one
-			if (!filePath.endsWith("/")) {
-				directoryPath += "/";
-			}
-		}
-
-		// If the filePath provided is a directory, make sure it exists. If it doesn't
-		// exist, create it.
-		if (directoryPath != null) {
-			File directory = new File(directoryPath);
-			if (!directory.exists()) {
-				directory.mkdirs();
-			}
-		}
-
-		try {
-			if (individualFilesPerObject) {
-				// If individualFilesPerObject is true, save each tag as a separate file
-				saveJsonFiles(json, filePath);
-			} else {
-				// If individualFilesPerObject is false, save the entire tag configuration as a
-				// single file
-				FileUtilities.saveJsonToFile(json, filePath);
-			}
-		} catch (IOException e) {
-			logger.error("Error saving tag configuration", e);
-			e.printStackTrace();
-			json = WebUtilities.getBadRequestError(httpServletResponse,
-					"Error saving tag configuration: " + e.getMessage());
-		}
-
-		return json;
-	}
-
-	/**
-	 * Imports a tag configuration from a JSON string in the request body
-	 *
-	 * @param requestContext      the context of the HTTP request
-	 * @param httpServletResponse the HTTP response to send
-	 * @return a JsonObject representing the results of the import operation
-	 * @throws JSONException if there is an error parsing the JSON string
-	 * @throws IOException   if there is an error reading the request body
-	 */
-	public JsonObject importTagConfiguration(RequestContext requestContext, HttpServletResponse httpServletResponse)
-			throws JSONException, IOException {
-		// Read the tag configuration from the request body
-		String tagConfiguration = requestContext.readBody();
-
-		// If the tag configuration is empty, return an error
-		if (tagConfiguration.isEmpty()) {
-			return WebUtilities.getBadRequestError(httpServletResponse, "Tag configuration is empty");
-		}
-
-		JsonObject tagConfigurationJson = (JsonObject) TagUtilities.stringToJson(tagConfiguration);
-		// If tagConfiguration is not valid JSON, return an error
-		if (!tagConfigurationJson.isJsonObject()) {
-			return WebUtilities.getBadRequestError(httpServletResponse, "Tag configuration is not valid JSON");
-		}
-
-		// If the first `tagType` key is "Provider", then we can use that for the
-		// provider
-		// If not, we will use the provider specified in the request
-		String provider = tagConfigurationJson.get("tagType").getAsString();
-		if (!provider.equals("Provider")) {
-			provider = requestContext.getParameter("provider");
-
-			if (provider == null) {
-				return WebUtilities.getBadRequestError(httpServletResponse,
-						"Provider is not specified, and tag configuration does not contain a provider");
-			}
-		} else {
-			provider = tagConfigurationJson.get("name").getAsString();
-		}
-
-		// If provider is not specified, default to DEFAULT_PROVIDER
-		if (provider == null || provider.isEmpty()) {
-			provider = TagConfigUtilities.DEFAULT_PROVIDER;
-		}
-
-		String collisionPolicyString = requestContext.getParameter("collisionPolicy");
-
-		String basePath = requestContext.getParameter("baseTagPath");
-		if (basePath == null) {
-			basePath = "";
-		}
-
-		// If the `collisionPolicy` is "d" then we will delete the tags before importing
-		// else we will use the collision policy specified in the request
-		Boolean deleteTags = collisionPolicyString.equals("d");
-
-		// If collisionPolicy is not specified, default to "a"
-		if (collisionPolicyString.isEmpty()) {
-			collisionPolicyString = "a";
-		} else if (deleteTags) {
-			collisionPolicyString = "o";
-		}
-
-		CollisionPolicy collisionPolicy = CollisionPolicy.fromString(collisionPolicyString);
-
-		// Convert the List of QualityCodes to an array of strings
 		JsonObject responseObject = new JsonObject();
-		JsonObject createdTags = new JsonObject();
-		JsonObject deletedTags = new JsonObject();
+		try {
+			responseObject = getTagConfigurationAsString(requestContext, httpServletResponse);
 
-		// If we are importing at the base path, remove any tags currently there
-		if (deleteTags) {
-			logger.info("Deleting all tags in provider " + provider + " before importing");
-			TagConfigurationModel baseTagsConfigurationModel = TagConfigUtilities.getTagConfigurationModel(tagManager,
-					provider, basePath, true, false);
-			List<QualityCode> deletedUdtQualityCodes = TagConfigUtilities.deleteTagsInConfigurationModel(tagManager,
-					provider, new BasicTagPath(provider), baseTagsConfigurationModel);
-
-			deletedTags.add(basePath, TagConfigUtilities.convertQualityCodesToArray(deletedUdtQualityCodes));
-		}
-
-		// For each tag object in the array tagConfigurationJson.get("tags")
-		for (JsonElement tag : tagConfigurationJson.get("tags").getAsJsonArray()) {
-			JsonObject tagObject = tag.getAsJsonObject();
-
-			TagPath tagPath = new BasicTagPath(provider);
-
-			if (basePath != null && !basePath.isEmpty()) {
-				tagPath = tagPath.getChildPath(basePath);
+			String filePath = requestContext.getParameter("filePath");
+			logger.trace("filePath: " + filePath);
+			// If filePath is not specified throw an error
+			if (filePath == null) {
+				throw new IllegalArgumentException("filePath parameter is required");
 			}
 
-			List<QualityCode> createdQualityCodes = tagManager
-					.importTagsAsync(tagPath, TagUtilities.jsonToString(tagObject), "json", collisionPolicy).join();
-			createdTags.add(tagPath.toString(), TagConfigUtilities.convertQualityCodesToArray(createdQualityCodes));
+			Boolean individualFilesPerObject = Boolean
+					.parseBoolean(requestContext.getParameter("individualFilesPerObject"));
+			logger.trace("individualFilesPerObject: " + individualFilesPerObject);
+
+			// Create the directory structure
+			File directory = new File(filePath);
+			if (!directory.exists()) {
+				boolean created = directory.mkdirs();
+				if (!created) {
+					logger.error("Failed to create directory: " + directory.getAbsolutePath());
+					responseObject = WebUtilities.getBadRequestError(httpServletResponse, "Failed to create directory: " + directory.getAbsolutePath());
+					return responseObject;
+				}
+			}
+
+			try {
+				if (individualFilesPerObject) {
+					// If individualFilesPerObject is true, save each tag as a separate file
+					saveJsonFiles(responseObject, filePath);
+				} else {
+					// If individualFilesPerObject is false, save the entire tag configuration as a single file
+					FileUtilities.saveJsonToFile(responseObject, filePath);
+				}
+			} catch (IOException e) {
+				logger.error("Error saving tag configuration", e);
+				e.printStackTrace();
+				responseObject = WebUtilities.getBadRequestError(httpServletResponse,
+						"Error saving tag configuration: " + e.getMessage());
+			}
+		} catch (Exception e) {
+			logger.error("Error exporting tag configuration to disc: " + e.getMessage(), e);
+			responseObject = WebUtilities.getInternalServerErrorResponse(httpServletResponse, e);
 		}
 
-		// If there were deleted or created tags, add them to the response
-		TagConfigUtilities.addQualityCodesToJsonObject(responseObject, deletedTags, "deleted_tags");
-		TagConfigUtilities.addQualityCodesToJsonObject(responseObject, createdTags, "created_tags");
 		return responseObject;
-
 	}
 }
