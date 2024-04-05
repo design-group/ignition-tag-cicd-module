@@ -2,6 +2,10 @@
 
 This module is used to enable CICD practices for Ignition tags. It enables the capability to export and import tag configurations from a gateway to a git repository. This allows for the ability to track tag changes in a git repository and to be able to roll back changes if needed.
 
+## Example Calls
+
+A document of example API calls has been added, which can be found [here](docs/example-calls.md).
+
 ## API Endpoints
 
 ### Export Tags
