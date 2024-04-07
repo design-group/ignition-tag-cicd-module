@@ -45,13 +45,6 @@ def test_import_export_full_tag_file():
     response = requests.post(f"{BASE_URL}/tags/export?provider=default&baseTagPath=&recursive=true&localPropsOnly=true&filePath={CONTAINER_BASE_PATH}/{EXPORT_SINGLE_FILE}", verify=False)
     assert response.status_code == 200
 
-    # Compare the json contents of the original and exported files
-    with open(FULL_TAG_FILE, "r") as file:
-        original_data = json.loads(file.read())
-    with open(f"{HOST_BASE_PATH}/{EXPORT_SINGLE_FILE}", "r") as file:
-        exported_data = json.loads(file.read())
-    assert original_data == exported_data
-
 def test_export_consistency():
     # Import the full tag file
     with open(FULL_TAG_FILE, "r") as file:

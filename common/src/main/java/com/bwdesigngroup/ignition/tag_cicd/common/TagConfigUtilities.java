@@ -129,19 +129,45 @@ public class TagConfigUtilities {
      * @param tagsJson the JsonObject containing the tags and UDT types
      * @return a new JsonObject with the sorted UDT types and regular tags
      */
-    public static JsonObject sortTagsAndUdtTypes(JsonObject tagsJson) {
+	public static JsonObject sortTagsAndUdtTypes(JsonObject tagsJson) {
 		JsonObject sortedTagsJson = new JsonObject();
-		JsonArray udtTypes = new JsonArray();
 		JsonArray regularTags = new JsonArray();
 
 		// Separate UDT types from regular tags and UDT instances
-		separateUdtTypesRegularTagsAndInstances(tagsJson, udtTypes, regularTags);
+		Map<String, JsonArray> udtTypesMap = new HashMap<>();
+		separateUdtTypesRegularTagsAndInstances(tagsJson, udtTypesMap, regularTags);
 
-		// Sort the UDT types based on their dependencies
-		JsonArray sortedUdtTypes = sortUdtTypes(udtTypes);
+		// Sort the UDT types in each folder based on their dependencies
+		for (Map.Entry<String, JsonArray> entry : udtTypesMap.entrySet()) {
+			String folderPath = entry.getKey();
+			JsonArray udtTypes = entry.getValue();
+			JsonArray sortedUdtTypes = sortUdtTypes(udtTypes);
 
-		// Add the sorted UDT types and regular tags to the new JsonObject
-		sortedTagsJson.add("udtTypes", sortedUdtTypes);
+			// Create the folder structure for the sorted UDT types
+			String[] folderNames = folderPath.split("/");
+			JsonObject currentFolder = sortedTagsJson;
+			for (String folderName : folderNames) {
+				JsonArray tagsArray = currentFolder.getAsJsonArray("tags");
+				if (tagsArray == null) {
+					tagsArray = new JsonArray();
+					currentFolder.add("tags", tagsArray);
+				}
+				JsonObject existingFolder = getTagByName(tagsArray, folderName);
+				if (existingFolder == null) {
+					JsonObject newFolder = new JsonObject();
+					newFolder.addProperty("name", folderName);
+					newFolder.addProperty("tagType", "Folder");
+					newFolder.add("tags", new JsonArray());
+					tagsArray.add(newFolder);
+					currentFolder = newFolder;
+				} else {
+					currentFolder = existingFolder;
+				}
+			}
+			currentFolder.getAsJsonArray("tags").addAll(sortedUdtTypes);
+		}
+
+		// Add the regular tags to the sortedTagsJson
 		sortedTagsJson.add("tags", regularTags);
 
 		return sortedTagsJson;
@@ -155,26 +181,69 @@ public class TagConfigUtilities {
      * @param udtTypes    the array to store the UDT types
      * @param regularTags the array to store the regular tags
      */
-    private static void separateUdtTypesRegularTagsAndInstances(JsonObject json, JsonArray udtTypes, JsonArray regularTags) {
+	private static void separateUdtTypesRegularTagsAndInstances(JsonObject json, Map<String, JsonArray> udtTypesMap, JsonArray regularTags) {
 		if (json.has("tags")) {
 			JsonArray tags = json.getAsJsonArray("tags");
 			for (JsonElement tagElement : tags) {
 				JsonObject tag = tagElement.getAsJsonObject();
 				String tagType = tag.get("tagType").getAsString();
 				if (tagType.equals("UdtType")) {
-					udtTypes.add(tag);
+					String folderPath = getTagFolderPath(json);
+					if (!udtTypesMap.containsKey(folderPath)) {
+						udtTypesMap.put(folderPath, new JsonArray());
+					}
+					udtTypesMap.get(folderPath).add(tag);
 				} else if (tagType.equals("UdtInstance")) {
 					// Recursively separate UDT instances and their children
-					JsonArray udtInstanceTags = new JsonArray();
-					separateUdtTypesRegularTagsAndInstances(tag, udtTypes, udtInstanceTags);
+					separateUdtTypesRegularTagsAndInstances(tag, udtTypesMap, new JsonArray());
 					regularTags.add(tag);
 				} else if (tagType.equals("Folder")) {
-					separateUdtTypesRegularTagsAndInstances(tag, udtTypes, regularTags);
+					separateUdtTypesRegularTagsAndInstances(tag, udtTypesMap, regularTags);
 				} else {
 					regularTags.add(tag);
 				}
 			}
 		}
+	}
+
+
+	/**
+	 * Returns the folder path of the given tag.
+	 *
+	 * @param tag the tag to get the folder path from
+	 * @return the folder path of the given tag
+	 */
+	private static String getTagFolderPath(JsonObject json) {
+		List<String> folderNames = new ArrayList<>();
+		JsonObject currentFolder = json;
+		while (currentFolder.has("name") && currentFolder.has("tagType") && currentFolder.get("tagType").getAsString().equals("Folder")) {
+			folderNames.add(0, currentFolder.get("name").getAsString());
+			if (currentFolder.has("tags")) {
+				currentFolder = currentFolder.getAsJsonArray("tags").get(0).getAsJsonObject();
+			} else {
+				break;
+			}
+		}
+		return String.join("/", folderNames);
+	}
+
+	/**
+	 * Returns the tag with the given name from the given JsonArray.
+	 *
+	 * @param tags the JsonArray to search for the tag
+	 * @param name the name of the tag to find
+	 * @return the tag with the given name, or null if not found
+	 */
+	private static JsonObject getTagByName(JsonArray tags, String name) {
+		if (tags != null) {
+			for (JsonElement tagElement : tags) {
+				JsonObject tag = tagElement.getAsJsonObject();
+				if (tag.get("name").getAsString().equals(name)) {
+					return tag;
+				}
+			}
+		}
+		return null;
 	}
 
     /**
