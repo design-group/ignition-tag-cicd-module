@@ -124,4 +124,87 @@ public class FileUtilities {
 		}
 		return null;
 	}
+
+	public static void deleteExistingFiles(String directoryPath, JsonObject jsonToSave,
+			boolean individualFilesPerObject) throws IOException {
+		File directory = new File(directoryPath);
+		File[] existingFiles = directory.listFiles();
+		if (existingFiles != null) {
+			for (File file : existingFiles) {
+				if (file.isDirectory()) {
+					// If the file is a directory, check if it should be preserved
+					if (!jsonToSave.has("tags") || !shouldPreserveDirectory(jsonToSave.getAsJsonArray("tags"),
+							file.getName(), individualFilesPerObject)) {
+						// If the directory should not be preserved, delete it recursively
+						deleteDirectory(file);
+					}
+				} else {
+					// If the file is not a directory, check if it should be preserved
+					if (!jsonToSave.has("tags") || !shouldPreserveFile(jsonToSave.getAsJsonArray("tags"),
+							file.getName(), individualFilesPerObject)) {
+						// If the file should not be preserved, delete it
+						file.delete();
+					}
+				}
+			}
+		}
+	}
+
+	private static boolean shouldPreserveDirectory(JsonArray tags, String directoryPath, boolean individualFilesPerObject) {
+		String directoryName = new File(directoryPath).getName();
+	
+		for (JsonElement tag : tags) {
+			JsonObject tagObject = tag.getAsJsonObject();
+			if (tagObject.get("tagType").getAsString().equals("Folder") || tagObject.get("tagType").getAsString().equals("Provider")) {
+				if (tagObject.get("name").getAsString().equals(directoryName)) {
+					if (individualFilesPerObject && tagObject.has("tags")) {
+						return shouldPreserveDirectory(tagObject.getAsJsonArray("tags"), directoryPath, individualFilesPerObject);
+					} else {
+						return true;
+					}
+				}
+			}
+			if (individualFilesPerObject && tagObject.has("tags")) {
+				String nestedDirectoryPath = directoryPath + "/" + tagObject.get("name").getAsString();
+				if (shouldPreserveDirectory(tagObject.getAsJsonArray("tags"), nestedDirectoryPath, individualFilesPerObject)) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+
+	private static boolean shouldPreserveFile(JsonArray tags, String filePath, boolean individualFilesPerObject) {
+		String fileName = new File(filePath).getName().replace(".json", "");
+
+		for (JsonElement tag : tags) {
+			JsonObject tagObject = tag.getAsJsonObject();
+			if (!tagObject.get("tagType").getAsString().equals("Folder")
+					&& !tagObject.get("tagType").getAsString().equals("Provider")) {
+				if (tagObject.get("name").getAsString().equals(fileName)) {
+					return true;
+				}
+			}
+			if (individualFilesPerObject && tagObject.has("tags")) {
+				if (shouldPreserveFile(tagObject.getAsJsonArray("tags"), filePath, individualFilesPerObject)) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+
+	private static void deleteDirectory(File directory) {
+		File[] files = directory.listFiles();
+		if (files != null) {
+			for (File file : files) {
+				if (file.isDirectory()) {
+					deleteDirectory(file);
+				} else {
+					file.delete();
+				}
+			}
+		}
+		directory.delete();
+	}
 }

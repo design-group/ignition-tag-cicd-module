@@ -6,6 +6,13 @@
 */
 package com.bwdesigngroup.ignition.tag_cicd.common;
 
+import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Queue;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -17,8 +24,6 @@ import com.inductiveautomation.ignition.common.tags.config.TagConfigurationModel
 import com.inductiveautomation.ignition.common.tags.model.TagPath;
 import com.inductiveautomation.ignition.common.tags.paths.BasicTagPath;
 import com.inductiveautomation.ignition.gateway.tags.model.GatewayTagManager;
-
-import java.util.*;
 
 /**
  *
@@ -284,7 +289,6 @@ public class TagConfigUtilities {
      */
     private static void sortUdtType(JsonObject udtType, Map<String, JsonObject> udtTypesMap,
                                     Queue<JsonObject> udtTypesQueue, JsonArray sortedUdtTypes) {
-        String udtName = udtType.get("name").getAsString();
         if (sortedUdtTypes.contains(udtType)) {
             return;
         }

@@ -114,8 +114,8 @@ public class TagExportRoutes {
 
 			Boolean localPropsOnly = Boolean.parseBoolean(requestContext.getParameter("localPropsOnly"));
 
-
-			TagConfigurationModel tagConfigurationModel = TagConfigUtilities.getTagConfigurationModel(tagManager, provider,
+			TagConfigurationModel tagConfigurationModel = TagConfigUtilities.getTagConfigurationModel(tagManager,
+					provider,
 					tagPath, recursive, localPropsOnly);
 
 			try {
@@ -198,8 +198,11 @@ public class TagExportRoutes {
 					.parseBoolean(requestContext.getParameter("individualFilesPerObject"));
 			logger.trace("individualFilesPerObject: " + individualFilesPerObject);
 
+			Boolean deleteExisting = Boolean.parseBoolean(requestContext.getParameter("deleteExisting"));
+
 			// Create the directory structure
-			// We must make sure that the path isnt a file path, and either has no extension, or ends with a '/'
+			// We must make sure that the path isnt a file path, and either has no
+			// extension, or ends with a '/'
 			String directoryPath = filePath;
 			if (directoryPath.contains(".")) {
 				directoryPath = directoryPath.substring(0, directoryPath.lastIndexOf("/"));
@@ -213,9 +216,16 @@ public class TagExportRoutes {
 				boolean created = directory.mkdirs();
 				if (!created) {
 					logger.error("Failed to create directory: " + directory.getAbsolutePath());
-					responseObject = WebUtilities.getBadRequestError(httpServletResponse, "Failed to create directory: " + directory.getAbsolutePath());
+					responseObject = WebUtilities.getBadRequestError(httpServletResponse,
+							"Failed to create directory: " + directory.getAbsolutePath());
 					return responseObject;
 				}
+			}
+
+			// Delete existing files and directories if requested
+			if (deleteExisting) {
+				logger.info("Deleting existing files in " + directoryPath);
+				FileUtilities.deleteExistingFiles(directoryPath, responseObject, individualFilesPerObject);
 			}
 
 			try {
@@ -223,7 +233,8 @@ public class TagExportRoutes {
 					// If individualFilesPerObject is true, save each tag as a separate file
 					saveJsonFiles(responseObject, filePath);
 				} else {
-					// If individualFilesPerObject is false, save the entire tag configuration as a single file
+					// If individualFilesPerObject is false, save the entire tag configuration as a
+					// single file
 					FileUtilities.saveJsonToFile(responseObject, filePath);
 				}
 			} catch (IOException e) {

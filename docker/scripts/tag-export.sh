@@ -25,6 +25,7 @@ display_help() {
   echo "  -t, --base-tag-path <path>    Set the base tag path (default: $DEFAULT_BASE_TAG_PATH)"
   echo "  -r, --recursive <true|false>  Set recursive export (default: $DEFAULT_RECURSIVE)"
   echo "  -h, --help                    Display this help message"
+  echo "  -d, --delete-existing         Delete existing tags before exporting"
   exit 0
 }
 
@@ -50,6 +51,10 @@ while [[ $# -gt 0 ]]; do
     -h|--help)
       display_help
       ;;
+	-d|--delete-existing)
+	  DELETE_EXISTING="true"
+	  shift
+	  ;;
     *)
       GATEWAY_BASE_URL="$1"
       shift
@@ -68,7 +73,7 @@ construct_url() {
   local provider="$2"
   local base_path="$3"
   local recursive="$4"
-  echo "${gateway_base_url}/data/tag-cicd/tags/export?provider=${provider}&recursive=${recursive}&baseTagPath=${base_path}&individualFilesPerObject=true&localPropsOnly=true&filePath=/workdir/tags"
+  echo "${gateway_base_url}/data/tag-cicd/tags/export?provider=${provider}&recursive=${recursive}&baseTagPath=${base_path}&individualFilesPerObject=true&localPropsOnly=true&filePath=/workdir/tags&deleteExisting=${DELETE_EXISTING}"
 }
 
 process_url() {
