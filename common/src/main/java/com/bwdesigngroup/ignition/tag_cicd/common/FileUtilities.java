@@ -16,6 +16,7 @@ import org.slf4j.LoggerFactory;
 import com.inductiveautomation.ignition.common.gson.JsonObject;
 import com.inductiveautomation.ignition.common.gson.Gson;
 import com.inductiveautomation.ignition.common.gson.GsonBuilder;
+import com.inductiveautomation.ignition.common.JsonUtilities;
 
 /**
  *
@@ -31,17 +32,20 @@ public class FileUtilities {
      * @throws IOException if there is an error writing the JSON object to the file
      */
     public static void saveJsonToFile(JsonObject json, String filePath) throws IOException {
-        logger.trace("Saving JSON to file: " + filePath);
+        // logger.trace("Saving JSON to file: " + filePath);
         // Create the file if it doesn't exist
         File file = new File(filePath);
         file.createNewFile();
-
+		
         // Create a Gson instance with pretty printing
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
+		// Createa deterministically sorted JSON object
+		json = (JsonObject) JsonUtilities.createDeterministicCopy(json);
+		logger.info("Deterministically sorted JSON object: " + json.toString());
         // Convert the Json object to a pretty printed string
-        String prettyJson = gson.toJson(json);
-
+        // String prettyJson = gson.toJson(json);
+		String prettyJson = json.toString();
         // Write the JSON to the file
         FileWriter fileWriter = new FileWriter(file);
         fileWriter.write(prettyJson);

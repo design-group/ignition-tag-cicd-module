@@ -124,18 +124,18 @@ curl -s "https://get.sdkman.io" | bash
 2. Install Java
 
 ```sh
-sdk install java java 11.0.22-zulu
+sdk install java java 17.0.11-zulu
 ```
 
 3. Install Gradle
 
 ```sh
-sdk install gradle 6.8.2
+sdk install gradle 7.5.1
 ```
 
 4. If you are going to deploy to a gateway with non-standard certificates installed, you will need to add the gateway's certificate to the Java truststore. This can be done by running the following commands:
 
 ```sh
-keytool -import -alias root_ca -file /path/to/root_ca.crt -keystore ~/.sdkman/candidates/java/current/lib/security/cacerts -storepass changeit
-keytool -import -alias server_cert -file /path/to/server.crt -keystore ~/.sdkman/candidates/java/current/lib/security/cacerts -storepass changeit
+keytool -import -cacerts -alias root_ca -file /path/to/root_ca.crt  -storepass changeit
+keytool -import -cacerts -alias server_cert -file /path/to/server.crt -storepass changeit
 ```
