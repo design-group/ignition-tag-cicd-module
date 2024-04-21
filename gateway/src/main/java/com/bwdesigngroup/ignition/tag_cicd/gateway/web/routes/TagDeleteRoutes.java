@@ -9,28 +9,18 @@ package com.bwdesigngroup.ignition.tag_cicd.gateway.web.routes;
 import static com.inductiveautomation.ignition.gateway.dataroutes.HttpMethod.DELETE;
 import static com.inductiveautomation.ignition.gateway.dataroutes.RouteGroup.TYPE_JSON;
 
-import java.io.IOException;
 import java.util.List;
-import java.io.File;
 
 import javax.servlet.http.HttpServletResponse;
 
-import org.json.JSONException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.bwdesigngroup.ignition.tag_cicd.common.TagConfigUtilities;
-import com.bwdesigngroup.ignition.tag_cicd.common.TagImportUtilities;
 import com.bwdesigngroup.ignition.tag_cicd.common.WebUtilities;
-import com.bwdesigngroup.ignition.tag_cicd.common.FileUtilities;
-import com.inductiveautomation.ignition.common.gson.JsonElement;
 import com.inductiveautomation.ignition.common.gson.JsonObject;
-import com.inductiveautomation.ignition.common.gson.JsonArray;
 import com.inductiveautomation.ignition.common.model.values.QualityCode;
-import com.inductiveautomation.ignition.common.tags.TagUtilities;
-import com.inductiveautomation.ignition.common.tags.config.CollisionPolicy;
 import com.inductiveautomation.ignition.common.tags.config.TagConfigurationModel;
-import com.inductiveautomation.ignition.common.tags.model.TagPath;
 import com.inductiveautomation.ignition.common.tags.paths.BasicTagPath;
 import com.inductiveautomation.ignition.gateway.dataroutes.RequestContext;
 import com.inductiveautomation.ignition.gateway.dataroutes.RouteGroup;

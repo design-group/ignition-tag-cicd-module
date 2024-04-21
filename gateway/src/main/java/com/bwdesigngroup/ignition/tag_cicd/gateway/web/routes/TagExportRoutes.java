@@ -11,7 +11,6 @@ import static com.inductiveautomation.ignition.gateway.dataroutes.RouteGroup.TYP
 
 import java.io.File;
 import java.io.IOException;
-import java.util.List;
 
 import javax.servlet.http.HttpServletResponse;
 
@@ -19,19 +18,14 @@ import org.json.JSONException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.bwdesigngroup.ignition.tag_cicd.common.FileUtilities;
 import com.bwdesigngroup.ignition.tag_cicd.common.TagConfigUtilities;
 import com.bwdesigngroup.ignition.tag_cicd.common.WebUtilities;
-import com.bwdesigngroup.ignition.tag_cicd.common.FileUtilities;
-import com.inductiveautomation.ignition.common.JsonUtilities;
 import com.inductiveautomation.ignition.common.gson.JsonArray;
 import com.inductiveautomation.ignition.common.gson.JsonElement;
 import com.inductiveautomation.ignition.common.gson.JsonObject;
-import com.inductiveautomation.ignition.common.model.values.QualityCode;
 import com.inductiveautomation.ignition.common.tags.TagUtilities;
-import com.inductiveautomation.ignition.common.tags.config.CollisionPolicy;
 import com.inductiveautomation.ignition.common.tags.config.TagConfigurationModel;
-import com.inductiveautomation.ignition.common.tags.model.TagPath;
-import com.inductiveautomation.ignition.common.tags.paths.BasicTagPath;
 import com.inductiveautomation.ignition.gateway.dataroutes.RequestContext;
 import com.inductiveautomation.ignition.gateway.dataroutes.RouteGroup;
 import com.inductiveautomation.ignition.gateway.model.GatewayContext;
@@ -131,7 +125,7 @@ public class TagExportRoutes {
 				e.printStackTrace();
 			}
 
-			responseObject = (JsonObject) JsonUtilities.createDeterministicCopy(responseObject);
+			responseObject = (JsonObject) FileUtilities.sortJsonElementRecursively(responseObject);
 		} catch (Exception e) {
 			logger.error("Error exporting tag configuration to string: " + e.toString(), e);
 			responseObject = WebUtilities.getInternalServerErrorResponse(httpServletResponse, e);
