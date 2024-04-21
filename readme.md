@@ -2,6 +2,10 @@
 
 This module is used to enable CICD practices for Ignition tags. It enables the capability to export and import tag configurations from a gateway to a git repository. This allows for the ability to track tag changes in a git repository and to be able to roll back changes if needed.
 
+## Deterministic JSON Export
+
+During the export process, the module creates a deterministically sorted copy of the JSON data to ensure that source control is not confused when a new file gets saved, and the keys are accidentally reordered. This process is applied recursively to all nested arrays and objects within the JSON data.
+
 ## Example Calls
 
 A document of example API calls has been added, which can be found [here](docs/example-calls.md).
@@ -49,11 +53,12 @@ This endpoint exports the tag configuration and saves it to a specified file pat
 | `localPropsOnly` | `boolean` | If `true`, only the local properties of the tags will be exported (user-created configuration). If `false`, all properties (including inherited properties) will be exported. |
 | `filePath` | `string` | The file path on the Ignition gateway server where the exported tag configuration will be saved. This parameter is required. |
 | `individualFilesPerObject` | `boolean` | If `true`, the export will create individual JSON files for each tag and folder, maintaining the tag hierarchy. If `false`, the entire tag configuration will be exported as a single JSON file. |
+| `deleteExisting` | `boolean` | If `true`, any existing files or directories in the export directory that are not going to be replaced by the new export will be deleted before saving the new export. If `false` (default), existing files and directories will not be deleted. |
 
 #### Example Usage
 
 ```sh
-curl -X POST "http://tag-cicd.localtest.me/data/tag-cicd/tags/export?provider=default&baseTagPath=MyTagFolder&recursive=true&localPropsOnly=true&filePath=data/projects/my-project/tags.json&individualFilesPerObject=false"
+curl -X POST "http://tag-cicd.localtest.me/data/tag-cicd/tags/export?provider=default&baseTagPath=MyTagFolder&recursive=true&localPropsOnly=true&filePath=data/projects/my-project/tags.json&individualFilesPerObject=false&deleteExisting=true"
 ```
 
 #### Response
