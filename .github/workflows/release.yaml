@@ -40,5 +40,8 @@ jobs:
         uses: marvinpinto/action-automatic-releases@latest
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
+          automatic_release_tag: ${{ github.event.inputs.tag || github.ref_name }}
           prerelease: false
-          files: build/Tag-CICD.modl
+          files: |
+            build/Tag-CICD.modl
+            LICENSE
