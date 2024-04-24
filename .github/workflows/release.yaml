@@ -22,8 +22,8 @@ jobs:
           cache: 'gradle'
       - name: Deserialize signing certs
         run: |
-          echo ${{ secrets.CODE_SIGNING_CERT_BASE64 }} | base64 --decode > cert.crt
-          echo ${{ secrets.CODE_SIGNING_KEYSTORE_BASE64 }} | base64 --decode > keystore.jks
+          echo "${{ secrets.CODE_SIGNING_CERT_BASE64 }}" | base64 --decode > cert.crt
+          echo "${{ secrets.CODE_SIGNING_KEYSTORE_BASE64 }}" | base64 --decode > keystore.jks
       - name: Build & create signed module
         run: >
           ./gradlew
