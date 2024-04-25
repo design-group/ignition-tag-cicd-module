@@ -28,7 +28,7 @@ ignitionModule {
     id = "tag-cicd"
 
     moduleVersion = version
-	license = "LICENSE"
+	license = "LICENSE.txt"
     moduleDescription = "A module to provide Tag related CICD Endpoints"
     /*
      * Minimum version of Ignition required for the module to function correctly.  This typically won't change over

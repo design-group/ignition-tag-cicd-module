@@ -98,6 +98,64 @@ The request body should be a JSON string representing the tag configuration to i
 
 The response will be a JSON object containing the results of the import operation, including the created and deleted tags.
 
+## Convenience Scripts
+
+This repository provides two convenience scripts for exporting and importing tags: `tag-export.sh` and `tag-import.sh`. These scripts simplify the process of interacting with the module's API endpoints.
+
+### Tag Export Script
+
+The `tag-export.sh` script allows you to easily export tags from an Ignition gateway using the module's export API endpoint.
+
+#### Usage
+
+```sh
+./tag-export.sh [options] <gateway_base_url>
+```
+
+#### Options
+
+| Option | Description | Default |
+| ------ | ----------- | ------- |
+| `-p, --provider <provider>` | Set the provider | `default` |
+| `-t, --base-tag-path <path>` | Set the base tag path | Empty string |
+| `-r, --recursive <true\|false>` | Set recursive export | `true` |
+| `-d, --delete-existing` | Delete existing tags before exporting | - |
+| `-h, --help` | Display the help message | - |
+
+#### Example
+
+```sh
+./tag-export.sh -p default -t MyTagFolder -r true --delete-existing http://localhost:8088
+```
+
+### Tag Import Script
+
+The `tag-import.sh` script allows you to easily import tags into an Ignition gateway using the module's import API endpoint.
+
+#### Usage
+
+```sh
+./tag-import.sh [options] <gateway_base_url>
+```
+
+#### Options
+
+| Option | Description | Default |
+| ------ | ----------- | ------- |
+| `-p, --provider <provider>` | Set the provider | `default` |
+| `-c, --policy <policy>` | Set the collision policy | `o` (overwrite) |
+| `-d, --directory <path>` | Specify the directory path to import | - |
+| `-a, --auto` | Automatically import tags from all providers in the specified directory | - |
+| `--force` | Force overwrite if collision policy is set to `o` | - |
+| `--debug` | Enable debug mode | - |
+| `-h, --help` | Display the help message | - |
+
+#### Example
+
+```sh
+./tag-import.sh -p default -c o -d /path/to/tags --force http://localhost:8088
+```
+
 ## Building the Module
 
 Within the root directory there is a file named `gradle.properties.template`. This file should be copied to `gradle.properties` and the properties within it should be filled out with the appropriate values.

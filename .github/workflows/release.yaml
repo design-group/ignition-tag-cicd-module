@@ -44,4 +44,4 @@ jobs:
           prerelease: false
           files: |
             build/Tag-CICD.modl
-            LICENSE
+            LICENSE.txt
