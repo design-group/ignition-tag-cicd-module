@@ -143,6 +143,15 @@ public class TagImportRoutes {
 		return responseObject;
 	}
 
+	/**
+	 * Imports tags from a JSON object
+	 *
+	 * @param provider        the provider to import the tags to
+	 * @param basePath        the base tag path to import the tags to
+	 * @param collisionPolicy the collision policy to use when importing the tags
+	 * @param createdTags     a JsonObject to store the results of the import operation
+	 * @param tagsJson        the JSON object containing the tags to import
+	 */
 	private void importTags(String provider, String basePath, CollisionPolicy collisionPolicy, JsonObject createdTags, JsonObject tagsJson) {
 		TagPath baseTagPath = new BasicTagPath(provider);
 		if (!basePath.isEmpty()) {
@@ -173,6 +182,14 @@ public class TagImportRoutes {
 		}
 	}
 
+	/**
+	 * Gets the provider from the request context
+	 *
+	 * @param requestContext the context of the HTTP request
+	 * @return the provider to use
+	 * @throws JSONException if there is an error parsing the JSON string
+	 * @throws IOException   if there is an error reading the request body
+	 */
 	private String getProvider(RequestContext requestContext) throws JSONException, IOException {
 		String provider = requestContext.getParameter("provider");
 		if (provider == null) {
@@ -187,6 +204,13 @@ public class TagImportRoutes {
 		return provider;
 	}
 
+	/**
+	 * Gets the collision policy from the request context
+	 *
+	 * @param collisionPolicyString the collision policy string to use
+	 * @param deleteTags            whether to delete tags before importing
+	 * @return the collision policy to use
+	 */
 	private CollisionPolicy getCollisionPolicy(String collisionPolicyString, Boolean deleteTags) {
 		if (collisionPolicyString.isEmpty()) {
 			collisionPolicyString = "a";

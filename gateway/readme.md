@@ -1,10 +1,13 @@
-# Gateway Scope - Example Component Library
+# Gateway Scope - Ignition Tag CI/CD Module
 
-This directory contains the gateway-specific code for the Example Component Library. The gateway scope is responsible for registering components with the Perspective system and handling any server-side logic related to these components.
+This directory contains the gateway-specific code for the Ignition Tag CI/CD Module. The gateway scope is responsible for registering components with the Perspective system and handling any server-side logic related to these components.
 
 ## Key Files
 
 - `ExampleComponentLibraryGatewayHook.java`: The main entry point for the gateway module.
+- `TagDeleteRoutes.java`: Handles tag deletion operations.
+- `TagExportRoutes.java`: Manages tag export functionality.
+- `TagImportRoutes.java`: Handles tag import operations.
 
 ## ExampleComponentLibraryGatewayHook
 
@@ -37,9 +40,56 @@ This class extends `AbstractGatewayModuleHook`, the hook provided by the Ignitio
    - Indicates whether this is a "free" module (not participating in the licensing system).
    - We return `true` as this is a free module.
 
-## Resource Mounting
+## TagDeleteRoutes
 
-By implementing `getMountedResourceFolder()` and `getMountPathAlias()`, we ensure that our web resources (JavaScript and CSS files) are properly mounted and accessible to the Perspective frontend.
+This class is responsible for handling tag deletion operations.
+
+### Key Methods
+
+1. `mountRoutes()`:
+   - Mounts the route for tag deletion.
+   - Uses DELETE HTTP method.
+
+2. `deleteAllTagsInProvider(RequestContext requestContext, HttpServletResponse httpServletResponse)`:
+   - Deletes all tags within a specified path.
+   - Returns a JsonObject indicating the status of the deletion process.
+
+## TagExportRoutes
+
+This class manages the export of tag configurations.
+
+### Key Methods
+
+1. `mountRoutes()`:
+   - Mounts routes for tag export operations.
+   - Includes routes for exporting tag configurations as JSON and saving to disk.
+
+2. `getTagConfigurationAsString(RequestContext requestContext, HttpServletResponse httpServletResponse)`:
+   - Returns the tag configuration as a JSON object.
+
+3. `saveTagConfigurationToDisc(RequestContext requestContext, HttpServletResponse httpServletResponse)`:
+   - Exports tag configuration to a specified file path.
+   - Supports individual file export for each tag object.
+
+4. `saveJsonFiles(JsonObject json, String baseFilePath)`:
+   - Recursive method to save JSON files for complex tag structures.
+
+## TagImportRoutes
+
+This class handles the import of tag configurations.
+
+### Key Methods
+
+1. `mountRoutes()`:
+   - Mounts the route for tag import operations.
+   - Uses POST HTTP method.
+
+2. `importTagConfiguration(RequestContext requestContext, HttpServletResponse httpServletResponse)`:
+   - Imports a tag configuration from a JSON string in the request body.
+   - Supports importing from individual files or a single JSON object.
+
+3. `importTags(String provider, String basePath, CollisionPolicy collisionPolicy, JsonObject createdTags, JsonObject tagsJson)`:
+   - Helper method to import tags, handling UDT types and tag hierarchies.
 
 ## Error Handling
 
@@ -50,5 +100,3 @@ We include error logging in case the component registry is not available, which 
 1. We use a logger (`slf4j.Logger`) for proper error and info logging.
 2. We check for null references before using them to avoid null pointer exceptions.
 3. We use constants for component IDs and module aliases to maintain consistency across the module.
-
-This gateway hook ensures that our custom components are properly registered with the Perspective module, making them available for use in Perspective projects. It also handles the proper mounting of resources and cleanup during shutdown.

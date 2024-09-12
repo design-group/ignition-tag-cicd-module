@@ -66,7 +66,7 @@ import_tags() {
   local directory_path="$3"
 
   if [ "$DEBUG" = true ]; then echo "Importing directory: $directory_path"; fi
-  curl_response=$(curl -sS -X POST "$(construct_url "$gateway_base_url" "$provider")")
+  curl_response=$(curl -sS -kX POST "$(construct_url "$gateway_base_url" "$provider")")
   RESTORED_FILES=$((RESTORED_FILES+1))
   good_count=$(count=$(echo "$curl_response" | grep -o 'Good' | wc -l); echo "${count:-0}")
   bad_failure_count=$(count=$(echo "$curl_response" | grep -o 'Bad_Failure' | wc -l); echo "${count:-0}")
