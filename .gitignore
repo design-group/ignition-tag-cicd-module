@@ -9,6 +9,8 @@ tmp/
 
 # VS Code files
 .vscode/
+# IntelliJ IDEA files
+.idea/
 
 # Gradle user home directory
 .gradle/

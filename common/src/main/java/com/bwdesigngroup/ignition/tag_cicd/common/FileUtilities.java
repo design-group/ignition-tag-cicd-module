@@ -25,12 +25,22 @@ import com.inductiveautomation.ignition.common.gson.JsonElement;
 import com.inductiveautomation.ignition.common.gson.JsonObject;
 
 /**
+ * A utility class for working with files.
  *
  * @author Keith Gamble
  */
 public class FileUtilities {
 	private static final Logger logger = LoggerFactory.getLogger(FileUtilities.class.getName());
 
+	/**
+	 * Sorts the given JSON element recursively. This method will sort the keys in
+	 * JSON objects and the elements in JSON arrays. This method is useful for
+	 * comparing JSON objects that may have the same elements but in a different
+	 * order.
+	 *
+	 * @param element the JSON element to sort
+	 * @return the sorted JSON element
+	 */
 	public static JsonElement sortJsonElementRecursively(JsonElement element) {
 		if (element.isJsonObject()) {
 			JsonObject object = element.getAsJsonObject();
@@ -116,6 +126,12 @@ public class FileUtilities {
 		return stringBuilder.toString();
 	}
 
+	/**
+	 * Finds the _types_ folder in the given array of files.
+	 *
+	 * @param files the array of files to search
+	 * @return the _types_ folder if it exists, otherwise null
+	 */
 	public static File findTypesFolder(File[] files) {
 		for (File file : files) {
 			if (file.isDirectory() && file.getName().equals("_types_")) {
@@ -125,6 +141,20 @@ public class FileUtilities {
 		return null;
 	}
 
+	/**
+	 * Deletes existing files in the given directory that should not be preserved
+	 * based on the given JSON object. This method will delete files that are not
+	 * tagged to be preserved in the JSON object. If the JSON object has a "tags"
+	 * array, this method will recursively delete files that are not tagged to be
+	 * preserved. If the JSON object does not have a "tags" array, this method will
+	 * delete all files in the directory that are not tagged to be preserved.
+	 *
+	 * @param directoryPath          the path to the directory to delete files from
+	 * @param jsonToSave             the JSON object to use for determining which
+	 *                               files to preserve
+	 * @param individualFilesPerObject whether each object should have its own file
+	 * @throws IOException if there is an error deleting files
+	 */
 	public static void deleteExistingFiles(String directoryPath, JsonObject jsonToSave,
 			boolean individualFilesPerObject) throws IOException {
 		File directory = new File(directoryPath);
@@ -150,6 +180,19 @@ public class FileUtilities {
 		}
 	}
 
+	/**
+	 * Determines if the directory at the given path should be preserved based on the
+	 * given JSON array of tags. This method will return true if the directory name
+	 * matches a folder or provider tag in the JSON array. If the JSON array has a
+	 * "tags" array, this method will recursively check if the directory should be
+	 * preserved based on the nested tags. If the JSON array does not have a "tags"
+	 * array, this method will return false.
+	 *
+	 * @param tags                  the JSON array of tags to check
+	 * @param directoryPath          the path to the directory to check
+	 * @param individualFilesPerObject whether each object should have its own file
+	 * @return true if the directory should be preserved, otherwise false
+	 */
 	private static boolean shouldPreserveDirectory(JsonArray tags, String directoryPath, boolean individualFilesPerObject) {
 		String directoryName = new File(directoryPath).getName();
 	
@@ -174,6 +217,19 @@ public class FileUtilities {
 		return false;
 	}
 
+	/**
+	 * Determines if the file at the given path should be preserved based on the
+	 * given JSON array of tags. This method will return true if the file name
+	 * matches a tag in the JSON array. If the JSON array has a "tags" array, this
+	 * method will recursively check if the file should be preserved based on the
+	 * nested tags. If the JSON array does not have a "tags" array, this method will
+	 * return false.
+	 *
+	 * @param tags                  the JSON array of tags to check
+	 * @param filePath              the path to the file to check
+	 * @param individualFilesPerObject whether each object should have its own file
+	 * @return true if the file should be preserved, otherwise false
+	 */
 	private static boolean shouldPreserveFile(JsonArray tags, String filePath, boolean individualFilesPerObject) {
 		String fileName = new File(filePath).getName().replace(".json", "");
 
@@ -194,6 +250,11 @@ public class FileUtilities {
 		return false;
 	}
 
+	/**
+	 * Deletes the given directory and all of its contents.
+	 *
+	 * @param directory the directory to delete
+	 */
 	private static void deleteDirectory(File directory) {
 		File[] files = directory.listFiles();
 		if (files != null) {

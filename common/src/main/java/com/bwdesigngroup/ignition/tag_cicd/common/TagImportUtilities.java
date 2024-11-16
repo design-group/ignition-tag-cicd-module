@@ -21,18 +21,33 @@ import java.util.stream.Stream;
 
 
 /**
+ * A utility class for importing tags.
  *
  * @author Keith Gamble
  */
 public class TagImportUtilities {
 	private static final Logger logger = LoggerFactory.getLogger(TagImportUtilities.class.getName());
 
+    /**
+     * Reads tags from a directory and returns them as a JsonObject.
+     *
+     * @param directoryPath the path to the directory to read tags from
+     * @return a JsonObject representing the tags in the directory
+     * @throws IOException if an error occurs while reading the tags
+     */
     public static JsonObject readTagsFromDirectory(String directoryPath) throws IOException {
 		logger.trace("Reading tags from directory: " + directoryPath);
         Path path = Paths.get(directoryPath);
         return readTagsRecursively(path);
     }
 
+    /**
+     * Reads tags from a directory and returns them as a JsonObject.
+     *
+     * @param path the path to the directory to read tags from
+     * @return a JsonObject representing the tags in the directory
+     * @throws IOException if an error occurs while reading the tags
+     */
     private static JsonObject readTagsRecursively(Path path) throws IOException {
         JsonObject folderObject = new JsonObject();
         JsonArray tagsArray = new JsonArray();
@@ -71,14 +86,20 @@ public class TagImportUtilities {
         return folderObject;
     }
 
+    /**
+     * Finds the _types_ folder in a JsonObject representing tags.
+     *
+     * @param tagsJson the JsonObject representing tags
+     * @return the JsonObject representing the _types_ folder
+     */
 	public static JsonObject findTypesFolder(JsonObject tagsJson) {
-    JsonArray tags = tagsJson.getAsJsonArray("tags");
-    for (JsonElement tag : tags) {
-        JsonObject tagObject = tag.getAsJsonObject();
-        if (tagObject.get("name").getAsString().equals("_types_") && tagObject.get("tagType").getAsString().equals("Folder")) {
-            return tagObject;
+        JsonArray tags = tagsJson.getAsJsonArray("tags");
+        for (JsonElement tag : tags) {
+            JsonObject tagObject = tag.getAsJsonObject();
+            if (tagObject.get("name").getAsString().equals("_types_") && tagObject.get("tagType").getAsString().equals("Folder")) {
+                return tagObject;
+            }
         }
+        return null;
     }
-    return null;
-}
 }

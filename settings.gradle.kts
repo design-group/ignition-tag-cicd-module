@@ -1,9 +1,9 @@
 pluginManagement {
     repositories {
         gradlePluginPortal()
-		mavenCentral()
+        mavenCentral()
         maven {
-            url 'https://nexus.inductiveautomation.com/repository/public'
+            url = uri("https://nexus.inductiveautomation.com/repository/public")
         }
     }
 }
@@ -11,7 +11,7 @@ pluginManagement {
 rootProject.name = "tag-cicd"
 
 include(
-":",
-	":common",
+    ":",
+    ":common",
     ":gateway"
 )

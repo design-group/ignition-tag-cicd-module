@@ -24,6 +24,7 @@ display_help() {
   echo "  -p, --provider <provider>     Set the provider (default: $DEFAULT_PROVIDER)"
   echo "  -t, --base-tag-path <path>    Set the base tag path (default: $DEFAULT_BASE_TAG_PATH)"
   echo "  -r, --recursive <true|false>  Set recursive export (default: $DEFAULT_RECURSIVE)"
+  echo "  -f, --file-path <path>        Set the file path to export"
   echo "  -h, --help                    Display this help message"
   echo "  -d, --delete-existing         Delete existing tags before exporting"
   exit 0
@@ -45,6 +46,11 @@ while [[ $# -gt 0 ]]; do
       ;;
     -r|--recursive)
       RECURSIVE="$2"
+      shift
+      shift
+      ;;
+    -f|--file-path)
+      FILE_PATH="$2"
       shift
       shift
       ;;
@@ -73,7 +79,7 @@ construct_url() {
   local provider="$2"
   local base_path="$3"
   local recursive="$4"
-  echo "${gateway_base_url}/data/tag-cicd/tags/export?provider=${provider}&recursive=${recursive}&baseTagPath=${base_path}&individualFilesPerObject=true&localPropsOnly=true&filePath=/workdir/tags&deleteExisting=${DELETE_EXISTING}"
+  echo "${gateway_base_url}/data/tag-cicd/tags/export?provider=${provider}&recursive=${recursive}&baseTagPath=${base_path}&individualFilesPerObject=true&localPropsOnly=true&filePath=${FILE_PATH}&deleteExisting=${DELETE_EXISTING}"
 }
 
 process_url() {
@@ -85,7 +91,7 @@ process_url() {
   URL=$(construct_url "$gateway_base_url" "$provider" "$base_path" "$recursive")
   echo "Constructed URL for $base_path: $URL"
 
-  curl -X POST "$URL"
+  curl -kX POST "$URL"
 }
 
 main() {

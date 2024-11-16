@@ -26,6 +26,7 @@ import com.inductiveautomation.ignition.common.tags.paths.BasicTagPath;
 import com.inductiveautomation.ignition.gateway.tags.model.GatewayTagManager;
 
 /**
+ * A utility class for tag configuration operations.
  *
  * @author Keith Gamble
  */
@@ -183,7 +184,7 @@ public class TagConfigUtilities {
      * and adds them to the respective arrays.
      *
      * @param json        the JsonObject to separate tags from
-     * @param udtTypes    the array to store the UDT types
+     * @param udtTypesMap the array to store the UDT types
      * @param regularTags the array to store the regular tags
      */
 	private static void separateUdtTypesRegularTagsAndInstances(JsonObject json, Map<String, JsonArray> udtTypesMap, JsonArray regularTags) {
