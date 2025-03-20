@@ -40,7 +40,6 @@ public class TagCICDGatewayHook extends AbstractGatewayModuleHook {
     public void setup(GatewayContext context) {
 		logger.info("Setting up TagCICDGatewayHook");
 		TagCICDGatewayHook.context = context;
-
     }
 
     /**
@@ -62,53 +61,17 @@ public class TagCICDGatewayHook extends AbstractGatewayModuleHook {
     }
 
     /**
-     * A list (may be null or empty) of panels to display in the config section. Note that any config panels that are
-     * part of a category that doesn't exist already or isn't included in {@link #getConfigCategories()} will
-     * <i>not be shown</i>.
-     */
-    @Override
-    public List<? extends IConfigTab> getConfigPanels() {
-        return null;
-    }
-
-    /**
-     * A list (may be null or empty) of custom config categories needed by any panels returned by  {@link
-     * #getConfigPanels()}
-     */
-    @Override
-    public List<ConfigCategory> getConfigCategories() {
-        return null;
-    }
-
-    /**
-     * @return the path to a folder in one of the module's gateway jar files that should be mounted at
-     * /res/module-id/foldername
-     */
-    @Override
-    public Optional<String> getMountedResourceFolder() {
-        return Optional.empty();
-    }
-
-    /**
      * Provides a chance for the module to mount any route handlers it wants. These will be active at
      * <tt>/main/data/module-id/*</tt> See {@link RouteGroup} for details. Will be called after startup().
      */
     @Override
     public void mountRouteHandlers(RouteGroup routes) {
-		logger.info("Mounting route handlers for TagCICDGatewayHook");
-		new TagExportRoutes(context, routes).mountRoutes();
-		new TagImportRoutes(context, routes).mountRoutes();
-		new TagDeleteRoutes(context, routes).mountRoutes();
+      logger.info("Mounting route handlers for TagCICDGatewayHook");
+      new TagExportRoutes(context, routes).mountRoutes();
+      new TagImportRoutes(context, routes).mountRoutes();
+      new TagDeleteRoutes(context, routes).mountRoutes();
     }
 
-    /**
-     * Used by the mounting underneath /res/module-id/* and /main/data/module-id/* as an alternate mounting path instead
-     * of your module id, if present.
-     */
-    @Override
-    public Optional<String> getMountPathAlias() {
-        return Optional.empty();
-    }
 
     /**
      * @return {@code true} if this is a "free" module, i.e. it does not participate in the licensing system. This is
@@ -117,55 +80,5 @@ public class TagCICDGatewayHook extends AbstractGatewayModuleHook {
     @Override
     public boolean isFreeModule() {
         return true;
-    }
-
-    /**
-     * Implement this method to contribute meta data to the Status section's Systems / Overview page.
-     */
-    @Override
-    public Optional<OverviewContributor> getStatusOverviewContributor() {
-        return Optional.empty();
-    }
-
-    /**
-     * Implement this method to contribute meta data to the Configure section's Overview page.
-     */
-    @Override
-    public Optional<ConfigOverviewContributor> getConfigOverviewContributor() {
-        return Optional.empty();
-    }
-
-    /**
-     * Register any {@link ResourceTypeAdapter}s this module needs with with {@code registry}.
-     * <p>
-     * ResourceTypeAdapters are used to adapt a legacy (7.9 or prior) resource type name or payload into a nicer format
-     * for the Ignition 8.0 project resource system.Ò Only override this method for modules that aren't known by the
-     * {@link ResourceTypeAdapterRegistry} already.
-     * <p>
-     * <b>This method is called before {@link #setup(GatewayContext)} or {@link #startup(LicenseState)}.</b>
-     *
-     * @param registry the shared {@link ResourceTypeAdapterRegistry} instance.
-     */
-    @Override
-    public void initializeResourceTypeAdapterRegistry(ResourceTypeAdapterRegistry registry) {
-
-    }
-
-    /**
-     * Called prior to a 'mounted resource request' being fulfilled by requests to the mounted resource servlet serving
-     * resources from /res/module-id/ (or /res/alias/ if {@link GatewayModuleHook#getMountPathAlias} is implemented). It
-     * is called after the target resource has been successfully located.
-     *
-     * <p>
-     * Primarily intended as an opportunity to amend/alter the response's headers for purposes such as establishing
-     * Cache-Control. By default, Ignition sets no additional headers on a resource request.
-     * </p>
-     *
-     * @param resourcePath path to the resource being returned by the mounted resource request
-     * @param response     the response to read/amend.
-     */
-    @Override
-    public void onMountedResourceRequest(String resourcePath, HttpServletResponse response) {
-
     }
 }
