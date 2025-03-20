@@ -1,0 +1,9 @@
+[versions]
+    ignition = "8.1.24"
+
+[libraries]
+    # Dependencies provided by the Ignition SDK, they all reference the 'ignition' version
+    ignition-common = { module = "com.inductiveautomation.ignitionsdk:ignition-common", version.ref = "ignition" }
+    ignition-gateway-api = { module = "com.inductiveautomation.ignitionsdk:gateway-api", version.ref = "ignition" }
+    ignition-client-api = { module = "com.inductiveautomation.ignitionsdk:client-api", version.ref = "ignition" }
+    ignition-designer-api = { module = "com.inductiveautomation.ignitionsdk:designer-api", version.ref = "ignition" }

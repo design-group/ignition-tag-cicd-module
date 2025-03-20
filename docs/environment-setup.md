@@ -23,7 +23,7 @@ This guide will walk you through setting up a development environment for Java a
    ```
 3. Install Java using SDKMAN!:
    ```
-   sdk install java 11.0.24-zulu
+   sdk install java 17.0.11-zulu
    ```
 
 ### 2. Install Gradle

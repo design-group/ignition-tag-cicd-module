@@ -1,0 +1,25 @@
+{
+  "folders": [
+    {
+      "name": "Root",
+      "path": "."
+    },
+    {
+      "name": "Common",
+      "path": "common/src/main"
+    },
+    {
+      "name": "Gateway",
+      "path": "gateway/src/main"
+    }
+  ],
+  "settings": {
+    "java.configuration.updateBuildConfiguration": "automatic",
+    "java.compile.nullAnalysis.mode": "automatic",
+    "java.format.settings.url": ".vscode/java-formatter.xml",
+
+    "java.import.gradle.version": "wrapper",
+    "java.import.gradle.wrapper.enabled": true,
+    "java.import.gradle.user.home": null
+  }
+}
