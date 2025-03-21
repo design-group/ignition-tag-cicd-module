@@ -1,23 +1,19 @@
 services:
   gateway:
-    image: bwdesigngroup/ignition-docker:8.1.37
+    image: bwdesigngroup/ignition-docker:8.1.43
     environment:
+      GATEWAY_MODULES_ENABLED: perspective
       ADDITIONAL_DATA_FOLDERS: tags
       DEVELOPER_MODE: Y
-      SYMLINK_GITIGNORE: false
-      SYMLINK_THEMES: false
-      SYMLINK_LOGBACK: false
-      GATEWAY_SYSTEM_NAME: tag-cicd
-      GATEWAY_PUBLIC_HTTPS_PORT: 443
-      GATEWAY_PUBLIC_ADDRESS: tag-cicd.localtest.me
     volumes:
-      - ../build/Tag-CICD.modl:/modules/Tag-CICD.modl
+      - ../build/Tag-CICD.modl:/usr/local/bin/ignition/user-lib/modules/Tag-CICD.modl
       - ./backups/gateway.gwbk:/restore.gwbk
       - ./temp/ignition-data:/workdir
     labels:
       traefik.enable: "true"
       traefik.hostname: "tag-cicd"
     command: >
+      -n tag-cicd
       -r /restore.gwbk
     networks:
       - default

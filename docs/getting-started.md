@@ -6,7 +6,7 @@ Welcome to the Example Component Library project! This guide will help you get u
 
 Before you begin, make sure you have the following tools installed:
 
-- Java 11
+- Java 17
 - Gradle 7.6
 - Node.js (LTS version)
 - npm (comes with Node.js)
