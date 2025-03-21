@@ -10,7 +10,8 @@ plugins {
 // Configure settings that apply to all projects in the build
 allprojects {
     // Set the version for all projects. Used in artifact naming and module version
-    version = "0.0.1-SNAPSHOT"
+    // This will be overridden by -Pversion parameter if provided
+    version = project.findProperty("version") ?: "0.0.1-SNAPSHOT"
     // Apply the eclipse plugin to all projects for consistent IDE support
     apply(plugin = "eclipse")
 }

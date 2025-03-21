@@ -2,18 +2,20 @@ name: Publish new version upon tag commit
 on:
   push:
     tags:
-      - '[0-9].[0-9].[0-9]'
-  workflow_dispatch:
-    inputs:
-      tag:
-        description: 'Tag to build and release'
-        required: true
+      - 'v*.*.*'  # Matches tags like v0.0.2
 
 jobs:
   build:
     name: Build & Release
     runs-on: ubuntu-latest
     steps:
+      - name: Extract version from tag
+        run: |
+          # Extract version from the tag that triggered the workflow (github.ref_name)
+          # and remove the 'v' prefix
+          VERSION=${GITHUB_REF_NAME#v}
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
+          echo "Using version: $VERSION"
       - uses: actions/checkout@v4
       - uses: actions/setup-java@v4
         with:
@@ -27,7 +29,7 @@ jobs:
       - name: Build & create signed module
         run: >
           ./gradlew
-          -Pversion=${{ github.event.inputs.tag || github.ref_name }}
+          -Pversion=${{ env.VERSION }}
           -PsignModule=true
           build
           signModule 
@@ -40,7 +42,7 @@ jobs:
         uses: marvinpinto/action-automatic-releases@latest
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
-          automatic_release_tag: ${{ github.event.inputs.tag || github.ref_name }}
+          automatic_release_tag: ${{ env.VERSION }}
           prerelease: false
           files: |
             build/Tag-CICD.modl
