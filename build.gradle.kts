@@ -25,14 +25,16 @@ ignitionModule {
     requiredIgnitionVersion.set("8.1.24")
 
     projectScopes.set(mapOf(
-        ":common" to "GC",
-        ":gateway" to "G"
+        ":common" to "GCD",
+        ":gateway" to "G",
+        ":designer" to "D"
     ))
 
     moduleDependencies.set(mapOf())
 
     hooks.set(mapOf(
-        "com.bwdesigngroup.ignition.tag_cicd.gateway.TagCICDGatewayHook" to "G"
+        "com.bwdesigngroup.ignition.tag_cicd.gateway.TagCICDGatewayHook" to "G",
+        "com.bwdesigngroup.ignition.tag_cicd.designer.TagCICDDesignerHook" to "D"
     ))
 
     applyInductiveArtifactRepo.set(true)

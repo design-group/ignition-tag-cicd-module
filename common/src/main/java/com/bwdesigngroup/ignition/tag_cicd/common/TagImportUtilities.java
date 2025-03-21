@@ -40,33 +40,49 @@ public class TagImportUtilities {
         JsonObject createdTags = new JsonObject();
         JsonObject deletedTags = new JsonObject();
 
-        if (baseTagPath == null) {
+        if (baseTagPath == null)
             baseTagPath = "";
-        }
+        logger.info(
+                "Starting tag import: provider={}, baseTagPath={}, sourcePath={}, collisionPolicy={}, individualFilesPerObject={}",
+                provider, baseTagPath, sourcePath, collisionPolicy, individualFilesPerObject);
 
         boolean deleteTags = "d".equalsIgnoreCase(collisionPolicy);
         CollisionPolicy policy = CollisionPolicy
                 .fromString(deleteTags ? "o" : (collisionPolicy.isEmpty() ? "a" : collisionPolicy));
 
         if (deleteTags) {
-            logger.info("Deleting all tags in provider " + provider + " at " + baseTagPath + " before importing");
-            TagPath tagPath = new BasicTagPath(provider, baseTagPath.isEmpty() ? List.of() : List.of(baseTagPath));
-            TagConfigurationModel baseTagsConfig = TagConfigUtilities.getTagConfigurationModel(tagManager, provider,
-                    baseTagPath, true, false);
-            List<QualityCode> deletedQualityCodes = TagConfigUtilities.deleteTagsInConfigurationModel(tagManager,
-                    provider, tagPath, baseTagsConfig);
-            deletedTags.add(baseTagPath, TagConfigUtilities.convertQualityCodesToArray(deletedQualityCodes));
+            logger.info("Deleting existing tags at {}/{}", provider, baseTagPath);
+            try {
+                TagPath tagPath = new BasicTagPath(provider, baseTagPath.isEmpty() ? List.of() : List.of(baseTagPath));
+                TagConfigurationModel baseTagsConfig = TagConfigUtilities.getTagConfigurationModel(tagManager, provider,
+                        baseTagPath, true, false);
+                List<QualityCode> deletedQualityCodes = TagConfigUtilities.deleteTagsInConfigurationModel(tagManager,
+                        provider, tagPath, baseTagsConfig);
+                deletedTags.add(baseTagPath, TagConfigUtilities.convertQualityCodesToArray(deletedQualityCodes));
+                logger.info("Successfully deleted tags at {}/{}", provider, baseTagPath);
+            } catch (Exception e) {
+                logger.error("Failed to delete tags at {}/{}: {}", provider, baseTagPath, e.getMessage(), e);
+                throw new IOException("Failed to delete existing tags: " + e.getMessage(), e);
+            }
         }
 
-        if (individualFilesPerObject) {
-            importTagsFromDirectory(tagManager, provider, baseTagPath, sourcePath, policy, createdTags);
-        } else {
-            importTagsFromFile(tagManager, provider, baseTagPath, sourcePath, policy, createdTags);
+        try {
+            if (individualFilesPerObject) {
+                logger.debug("Importing tags from directory: {}", sourcePath);
+                importTagsFromDirectory(tagManager, provider, baseTagPath, sourcePath, policy, createdTags);
+                logger.info("Successfully imported tags from directory: {}", sourcePath);
+            } else {
+                logger.debug("Importing tags from file: {}", sourcePath);
+                importTagsFromFile(tagManager, provider, baseTagPath, sourcePath, policy, createdTags);
+                logger.info("Successfully imported tags from file: {}", sourcePath);
+            }
+        } catch (IOException e) {
+            logger.error("Failed to import tags from source {}: {}", sourcePath, e.getMessage(), e);
+            throw e;
         }
 
         TagConfigUtilities.addQualityCodesToJsonObject(responseObject, deletedTags, "deleted_tags");
         TagConfigUtilities.addQualityCodesToJsonObject(responseObject, createdTags, "created_tags");
-
         return responseObject;
     }
 

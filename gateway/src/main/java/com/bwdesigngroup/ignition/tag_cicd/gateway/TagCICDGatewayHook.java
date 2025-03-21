@@ -1,21 +1,25 @@
 package com.bwdesigngroup.ignition.tag_cicd.gateway;
 
-import java.io.File;
-import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.nio.file.Path;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.bwdesigngroup.ignition.tag_cicd.common.TagImportUtilities;
+import com.bwdesigngroup.ignition.tag_cicd.common.TagCICDConstants;
 import com.bwdesigngroup.ignition.tag_cicd.gateway.web.routes.TagExportRoutes;
 import com.bwdesigngroup.ignition.tag_cicd.gateway.web.routes.TagImportRoutes;
+import com.bwdesigngroup.ignition.tag_cicd.gateway.web.routes.TagConfigRoutes;
 import com.bwdesigngroup.ignition.tag_cicd.gateway.web.routes.TagDeleteRoutes;
 import com.inductiveautomation.ignition.common.gson.Gson;
 import com.inductiveautomation.ignition.common.gson.JsonArray;
 import com.inductiveautomation.ignition.common.gson.JsonElement;
 import com.inductiveautomation.ignition.common.gson.JsonObject;
+import com.inductiveautomation.ignition.common.gson.JsonParser;
 import com.inductiveautomation.ignition.common.licensing.LicenseState;
+import com.inductiveautomation.ignition.gateway.clientcomm.ClientReqSession;
 import com.inductiveautomation.ignition.gateway.dataroutes.RouteGroup;
 import com.inductiveautomation.ignition.gateway.model.AbstractGatewayModuleHook;
 import com.inductiveautomation.ignition.gateway.model.GatewayContext;
@@ -27,7 +31,6 @@ public class TagCICDGatewayHook extends AbstractGatewayModuleHook {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
     public static GatewayContext context;
-    private static final String CONFIG_FILE_PATH = "data/modules/com.bwdesigngroup.ignition.tag_cicd/import-config.json";
 
     @Override
     public void setup(GatewayContext context) {
@@ -38,27 +41,21 @@ public class TagCICDGatewayHook extends AbstractGatewayModuleHook {
     @Override
     public void startup(LicenseState activationState) {
         logger.info("Starting up TagCICDGatewayHook");
-        performStartupImports();
+        performInitialTagImport();
     }
 
-    private void performStartupImports() {
-        File configFile = new File(CONFIG_FILE_PATH);
-        if (!configFile.exists()) {
-            logger.info("No import config file found at " + CONFIG_FILE_PATH + ". Skipping startup imports.");
+    private void performInitialTagImport() {
+        Path configPath = Paths.get(TagCICDConstants.CONFIG_FILE_PATH);
+        if (!Files.exists(configPath)) {
+            logger.info("No tag-cicd-config.json found at " + configPath.toAbsolutePath() + ", skipping initial import.");
             return;
         }
 
         try {
-            String configContent = new String(Files.readAllBytes(configFile.toPath()));
-            Gson gson = new Gson();
-            JsonArray importConfigs = gson.fromJson(configContent, JsonArray.class);
+            String configContent = new String(Files.readAllBytes(configPath));
+            JsonArray configArray = new JsonParser().parse(configContent).getAsJsonArray();
 
-            if (importConfigs == null || importConfigs.size() == 0) {
-                logger.info("Import config file is empty or invalid. Skipping startup imports.");
-                return;
-            }
-
-            for (JsonElement element : importConfigs) {
+            for (JsonElement element : configArray) {
                 JsonObject config = element.getAsJsonObject();
                 String sourcePath = config.get("sourcePath").getAsString();
                 String provider = config.get("provider").getAsString();
@@ -66,22 +63,14 @@ public class TagCICDGatewayHook extends AbstractGatewayModuleHook {
                 String collisionPolicy = config.get("collisionPolicy").getAsString();
                 boolean individualFilesPerObject = config.get("individualFilesPerObject").getAsBoolean();
 
-                logger.info("Processing startup import from " + sourcePath + " to provider " + provider + " at " + baseTagPath);
-
+                logger.info("Importing tags from " + sourcePath + " to provider " + provider);
                 JsonObject result = TagImportUtilities.importTagsFromSource(
-                    context.getTagManager(), provider, baseTagPath, sourcePath, collisionPolicy, individualFilesPerObject
-                );
-
-                if (result.has("error")) {
-                    logger.error("Failed to import tags from " + sourcePath + ": " + result.get("error").getAsString());
-                } else {
-                    logger.info("Successfully imported tags from " + sourcePath + " to " + provider + "/" + baseTagPath);
-                }
+                        context.getTagManager(), provider, baseTagPath, sourcePath,
+                        collisionPolicy, individualFilesPerObject);
+                logger.info("Import result: " + result.toString());
             }
-        } catch (IOException e) {
-            logger.error("Error reading import config file: " + e.getMessage(), e);
         } catch (Exception e) {
-            logger.error("Error during startup tag import: " + e.getMessage(), e);
+            logger.error("Failed to perform initial tag import from " + configPath.toAbsolutePath(), e);
         }
     }
 
@@ -96,6 +85,13 @@ public class TagCICDGatewayHook extends AbstractGatewayModuleHook {
         new TagExportRoutes(context, routes).mountRoutes();
         new TagImportRoutes(context, routes).mountRoutes();
         new TagDeleteRoutes(context, routes).mountRoutes();
+        new TagConfigRoutes(context, routes).mountRoutes();
+    }
+
+    @Override
+    public Object getRPCHandler(ClientReqSession session, String projectName) {
+        logger.debug("Creating RPC Handler for session: " + session.getId() + ", project: " + projectName);
+        return new TagCICDRPCHandler(context);
     }
 
     @Override

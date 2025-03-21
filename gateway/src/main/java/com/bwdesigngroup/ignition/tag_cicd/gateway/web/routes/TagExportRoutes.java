@@ -73,11 +73,17 @@ public class TagExportRoutes {
 			boolean individualFilesPerObject = Boolean
 					.parseBoolean(requestContext.getParameter("individualFilesPerObject"));
 			boolean deleteExisting = Boolean.parseBoolean(requestContext.getParameter("deleteExisting"));
+			boolean excludeUdtDefinitions = Boolean
+					.parseBoolean(requestContext.getParameter("excludeUdtDefinitions")); // Default to false if not
+																							// provided
 
 			TagExportUtilities.exportTagsToDisk(tagManager, provider, baseTagPath, recursive, localPropsOnly, filePath,
-					individualFilesPerObject, deleteExisting);
+					individualFilesPerObject, deleteExisting, excludeUdtDefinitions);
 			responseObject.addProperty("status", "success");
 			responseObject.addProperty("filePath", filePath);
+			if (excludeUdtDefinitions) {
+				responseObject.addProperty("excludedUdtDefinitions", true);
+			}
 		} catch (Exception e) {
 			logger.error("Error exporting tags to disk: " + e.getMessage(), e);
 			responseObject = WebUtilities.getInternalServerErrorResponse(httpServletResponse, e);

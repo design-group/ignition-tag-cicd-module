@@ -31,4 +31,4 @@ enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 
 rootProject.name = "tag-cicd"
 
-include(":common", ":gateway")
+include(":common", ":gateway", ":designer")

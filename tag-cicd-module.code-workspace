@@ -11,6 +11,10 @@
     {
       "name": "Gateway",
       "path": "gateway/src/main"
+    },
+    {
+      "name": "Designer",
+      "path": "designer/src/main"
     }
   ],
   "settings": {
@@ -20,6 +24,7 @@
 
     "java.import.gradle.version": "wrapper",
     "java.import.gradle.wrapper.enabled": true,
-    "java.import.gradle.user.home": null
+    "java.import.gradle.user.home": null,
+    "java.jdt.ls.java.home": "~/.sdkman/candidates/java/17.0.11-zulu"
   }
 }
