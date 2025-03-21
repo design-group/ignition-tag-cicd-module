@@ -38,11 +38,23 @@ jobs:
           --keystoreFile=keystore.jks
           --keystorePassword="${{ secrets.CODE_SIGNING_KEYSTORE_PASSWORD }}"
           --certAlias="${{ secrets.CODE_SIGNING_CERT_ALIAS }}"
-      - name: Create release
-        uses: marvinpinto/action-automatic-releases@latest
+      # First, upload the artifact with the latest version of upload-artifact (v4)
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
         with:
-          repo_token: ${{ secrets.GITHUB_TOKEN }}
-          automatic_release_tag: ${{ env.VERSION }}
+          name: release-files
+          path: |
+            build/Tag-CICD.modl
+            LICENSE.txt
+            
+      # Then create the GitHub release
+      - name: Create release
+        uses: softprops/action-gh-release@v2
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          tag_name: v${{ env.VERSION }}
+          name: Release ${{ env.VERSION }}
+          draft: false
           prerelease: false
           files: |
             build/Tag-CICD.modl
