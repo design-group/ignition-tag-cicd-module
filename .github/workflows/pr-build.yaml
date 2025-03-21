@@ -13,7 +13,7 @@ jobs:
       - name: Build
         run: ./gradlew build
       - name: Upload Unsigned Module
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: tag-cicd-unsigned
           path: build/Tag-CICD.unsigned.modl
