@@ -2,7 +2,7 @@ name: Publish new version upon tag commit
 on:
   push:
     tags:
-      - 'v*.*.*'  # Matches tags like v0.0.2
+      - 'v*.*.*'
 
 jobs:
   build:
