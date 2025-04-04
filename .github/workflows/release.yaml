@@ -1,0 +1,49 @@
+name: Publish new version upon tag commit
+on:
+  push:
+    tags:
+      - 'v*.*.*'  # Matches tags like v0.0.2
+
+jobs:
+  build:
+    name: Build & Release
+    runs-on: ubuntu-latest
+    steps:
+      - name: Extract version from tag
+        run: |
+          # Extract version from the tag that triggered the workflow (github.ref_name)
+          # and remove the 'v' prefix
+          VERSION=${GITHUB_REF_NAME#v}
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
+          echo "Using version: $VERSION"
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: 'zulu'
+          java-version: 17
+          cache: 'gradle'
+      - name: Deserialize signing certs
+        run: |
+          echo "${{ secrets.CODE_SIGNING_CERT_BASE64 }}" | base64 --decode > cert.crt
+          echo "${{ secrets.CODE_SIGNING_KEYSTORE_BASE64 }}" | base64 --decode > keystore.jks
+      - name: Build & create signed module
+        run: >
+          ./gradlew
+          -Pversion=${{ env.VERSION }}
+          -PsignModule=true
+          build
+          signModule 
+          --certFile=cert.crt
+          --certPassword="${{ secrets.CODE_SIGNING_CERT_PASSWORD }}"
+          --keystoreFile=keystore.jks
+          --keystorePassword="${{ secrets.CODE_SIGNING_KEYSTORE_PASSWORD }}"
+          --certAlias="${{ secrets.CODE_SIGNING_CERT_ALIAS }}"
+      - name: Create release
+        uses: marvinpinto/action-automatic-releases@latest
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          automatic_release_tag: ${{ env.VERSION }}
+          prerelease: false
+          files: |
+            build/Tag-CICD.modl
+            LICENSE.txt

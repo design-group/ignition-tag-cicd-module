@@ -1,0 +1,54 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "Tag CICD Configuration",
+    "description": "Configuration for tag export/import with CI/CD support",
+    "type": "array",
+    "items": {
+        "type": "object",
+        "required": [
+            "provider",
+            "baseTagPath",
+            "sourcePath",
+            "collisionPolicy"
+        ],
+        "properties": {
+            "provider": {
+                "type": "string",
+                "description": "The Ignition tag provider name"
+            },
+            "baseTagPath": {
+                "type": "string",
+                "description": "The base tag path to export from or import to"
+            },
+            "sourcePath": {
+                "type": "string",
+                "description": "The file or directory path to save tags to or import tags from"
+            },
+            "collisionPolicy": {
+                "type": "string",
+                "enum": [
+                    "a",
+                    "m",
+                    "o",
+                    "d"
+                ],
+                "description": "The collision policy to use for imports (a=abort, m=merge, o=overwrite, d=delete-and-replace)"
+            },
+            "exportMode": {
+                "type": "string",
+                "enum": [
+                    "singleFile",
+                    "individualFiles",
+                    "structuredByType"
+                ],
+                "description": "The export mode to use for exporting and importing tags",
+                "default": "individual"
+            },
+            "excludeUdtDefinitions": {
+                "type": "boolean",
+                "description": "Whether to exclude UDT definitions (_types_ folder) when exporting",
+                "default": false
+            }
+        }
+    }
+}

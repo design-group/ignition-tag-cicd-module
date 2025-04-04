@@ -1,0 +1,327 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry output="bin/main" kind="src" path="src/main/java">
+		<attributes>
+			<attribute name="gradle_scope" value="main"/>
+			<attribute name="gradle_used_by_scope" value="main,test"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="con" path="org.eclipse.buildship.core.gradleclasspathcontainer"/>
+	<classpathentry kind="output" path="bin/default"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-17/"/>
+	<classpathentry kind="lib" path="/Users/gamblek/.gradle/caches/modules-2/files-2.1/com.inductiveautomation.ignition/gateway-api/8.1.24/7d47f7af4daee1c8da7095e60d6a05e8b4e61fe4/gateway-api-8.1.24.jar">
+		<attributes>
+			<attribute name="gradle_used_by_scope" value=""/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="/Users/gamblek/.gradle/caches/modules-2/files-2.1/com.inductiveautomation.ignition/metro/8.1.24/6a681b996cdef7bc47bc03bdb1e08470021a31f4/metro-8.1.24.jar">
+		<attributes>
+			<attribute name="gradle_used_by_scope" value=""/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="/Users/gamblek/.gradle/caches/modules-2/files-2.1/com.inductiveautomation.ignition/common/8.1.24/e6111d6bbdab36e87997a10272c7bec7f5cb01/common-8.1.24.jar">
+		<attributes>
+			<attribute name="gradle_used_by_scope" value=""/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="/Users/gamblek/.gradle/caches/modules-2/files-2.1/org.apache.poi/poi-ooxml/4.1.1/216d8bb4c064c3a1079e77d693cd60346dd63f38/poi-ooxml-4.1.1.jar">
+		<attributes>
+			<attribute name="gradle_used_by_scope" value=""/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="/Users/gamblek/.gradle/caches/modules-2/files-2.1/org.apache.poi/poi/4.1.1/c915f1a426213a8450fb473b5b3adb63f5ac1017/poi-4.1.1.jar">
+		<attributes>
+			<attribute name="gradle_used_by_scope" value=""/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="/Users/gamblek/.gradle/caches/modules-2/files-2.1/org.apache.poi/poi-ooxml-schemas/4.1.1/7bb506f074a5bffce6b367f40ee0535fa7f73003/poi-ooxml-schemas-4.1.1.jar">
+		<attributes>
+			<attribute name="gradle_used_by_scope" value=""/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="/Users/gamblek/.gradle/caches/modules-2/files-2.1/ch.qos.logback/logback-classic/1.2.3/7c4f3c474fb2c041d8028740440937705ebb473a/logback-classic-1.2.3.jar">
+		<attributes>
+			<attribute name="gradle_used_by_scope" value=""/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="/Users/gamblek/.gradle/caches/modules-2/files-2.1/com.fifesoft/rsyntaxtextarea/3.2.0/390e6c2463b6baf5d36393fe5685ef93c0bac8bd/rsyntaxtextarea-3.2.0.jar">
+		<attributes>
+			<attribute name="gradle_used_by_scope" value=""/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="/Users/gamblek/.gradle/caches/modules-2/files-2.1/com.google.guava/guava/26.0-jre/6a806eff209f36f635f943e16d97491f00f6bfab/guava-26.0-jre.jar">
+		<attributes>
+			<attribute name="gradle_used_by_scope" value=""/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="/Users/gamblek/.gradle/caches/modules-2/files-2.1/com.inductiveautomation.ignition/ia-gson/2.8.5/841b0a21b2da7f0822c6504799357933077a5203/ia-gson-2.8.5.jar">
+		<attributes>
+			<attribute name="gradle_used_by_scope" value=""/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="/Users/gamblek/.gradle/caches/modules-2/files-2.1/com.jidesoft/jide-common/3.7.14/9a1aa7ea3ce72356162d2acbce6fa61e7c36c8de/jide-common-3.7.14.jar">
+		<attributes>
+			<attribute name="gradle_used_by_scope" value=""/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="/Users/gamblek/.gradle/caches/modules-2/files-2.1/com.solvoj.zxing-java6/core-java6/3.2.1.4/e0e546d8e906746fcee7a96550066845ad8d54f4/core-java6-3.2.1.4.jar">
+		<attributes>
+			<attribute name="gradle_used_by_scope" value=""/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="/Users/gamblek/.gradle/caches/modules-2/files-2.1/commons-cli/commons-cli/1.4/c51c00206bb913cd8612b24abd9fa98ae89719b1/commons-cli-1.4.jar">
+		<attributes>
+			<attribute name="gradle_used_by_scope" value=""/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="/Users/gamblek/.gradle/caches/modules-2/files-2.1/commons-codec/commons-codec/1.13/3f18e1aa31031d89db6f01ba05d501258ce69d2c/commons-codec-1.13.jar">
+		<attributes>
+			<attribute name="gradle_used_by_scope" value=""/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="/Users/gamblek/.gradle/caches/modules-2/files-2.1/commons-io/commons-io/2.2/83b5b8a7ba1c08f9e8c8ff2373724e33d3c1e22a/commons-io-2.2.jar">
+		<attributes>
+			<attribute name="gradle_used_by_scope" value=""/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="/Users/gamblek/.gradle/caches/modules-2/files-2.1/commons-logging/commons-logging/1.2/4bfc12adfe4842bf07b657f0369c4cb522955686/commons-logging-1.2.jar">
+		<attributes>
+			<attribute name="gradle_used_by_scope" value=""/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="/Users/gamblek/.gradle/caches/modules-2/files-2.1/edu.princeton.cup/java-cup/10k/88eadc5347b2a22c9c87a04687f0aabaeac01c0b/java-cup-10k.jar">
+		<attributes>
+			<attribute name="gradle_used_by_scope" value=""/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="/Users/gamblek/.gradle/caches/modules-2/files-2.1/it.sauronsoftware.cron4j/cron4j/2.2.5/da0dd0edee48b570cd1e23895e0ac80e09eb272b/cron4j-2.2.5.jar">
+		<attributes>
+			<attribute name="gradle_used_by_scope" value=""/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="/Users/gamblek/.gradle/caches/modules-2/files-2.1/joda-time/joda-time/2.10.2/a079fc39ccc3de02acdeb7117443e5d9bd431687/joda-time-2.10.2.jar">
+		<attributes>
+			<attribute name="gradle_used_by_scope" value=""/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="/Users/gamblek/.gradle/caches/modules-2/files-2.1/org.apache.commons/commons-collections4/4.4/62ebe7544cb7164d87e0637a2a6a2bdc981395e8/commons-collections4-4.4.jar">
+		<attributes>
+			<attribute name="gradle_used_by_scope" value=""/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="/Users/gamblek/.gradle/caches/modules-2/files-2.1/org.apache.commons/commons-compress/1.19/7e65777fb451ddab6a9c054beb879e521b7eab78/commons-compress-1.19.jar">
+		<attributes>
+			<attribute name="gradle_used_by_scope" value=""/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="/Users/gamblek/.gradle/caches/modules-2/files-2.1/org.apache.commons/commons-lang3/3.11/68e9a6adf7cf8eb7e9d31bbc554c7c75eeaac568/commons-lang3-3.11.jar">
+		<attributes>
+			<attribute name="gradle_used_by_scope" value=""/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="/Users/gamblek/.gradle/caches/modules-2/files-2.1/org.apache.commons/commons-math3/3.6.1/e4ba98f1d4b3c80ec46392f25e094a6a2e58fcbf/commons-math3-3.6.1.jar">
+		<attributes>
+			<attribute name="gradle_used_by_scope" value=""/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="/Users/gamblek/.gradle/caches/modules-2/files-2.1/org.apache.commons/commons-text/1.10.0/3363381aef8cef2dbc1023b3e3a9433b08b64e01/commons-text-1.10.0.jar">
+		<attributes>
+			<attribute name="gradle_used_by_scope" value=""/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="/Users/gamblek/.gradle/caches/modules-2/files-2.1/org.apache.httpcomponents/httpclient/4.5.13/e5f6cae5ca7ecaac1ec2827a9e2d65ae2869cada/httpclient-4.5.13.jar">
+		<attributes>
+			<attribute name="gradle_used_by_scope" value=""/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="/Users/gamblek/.gradle/caches/modules-2/files-2.1/org.jfree/jfreechart-min/1.0.0/3ef062a1a6ff56fbe25156e2e44950c42676caea/jfreechart-min-1.0.0.jar">
+		<attributes>
+			<attribute name="gradle_used_by_scope" value=""/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="/Users/gamblek/.gradle/caches/modules-2/files-2.1/org.jgrapht/jgrapht-core/1.4.0/b6a0d2d511bec1ca30798e0defc6cbaab3d77c7c/jgrapht-core-1.4.0.jar">
+		<attributes>
+			<attribute name="gradle_used_by_scope" value=""/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="/Users/gamblek/.gradle/caches/modules-2/files-2.1/org.python/jython-ia/2.7.2.1/a384ae915b6fd0179421d6ed84c275a509d08db7/jython-ia-2.7.2.1.jar">
+		<attributes>
+			<attribute name="gradle_used_by_scope" value=""/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="/Users/gamblek/.gradle/caches/modules-2/files-2.1/org.slf4j/log4j-over-slf4j/1.7.26/daeb21c5e35d77d550e721c4cf5aaa716496d31a/log4j-over-slf4j-1.7.26.jar">
+		<attributes>
+			<attribute name="gradle_used_by_scope" value=""/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="/Users/gamblek/.gradle/caches/modules-2/files-2.1/org.slf4j/slf4j-api/1.7.26/77100a62c2e6f04b53977b9f541044d7d722693d/slf4j-api-1.7.26.jar">
+		<attributes>
+			<attribute name="gradle_used_by_scope" value=""/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="/Users/gamblek/.gradle/caches/modules-2/files-2.1/io.dropwizard.metrics/metrics-core/4.2.0/e8eeb93e2aec6c5c121b0ca20c1887854f6f57dd/metrics-core-4.2.0.jar">
+		<attributes>
+			<attribute name="gradle_used_by_scope" value=""/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="/Users/gamblek/.gradle/caches/modules-2/files-2.1/net.sf.barcode4j/barcode4j/2.1/4b38b2219c0d522fcea8238493f2ea3e238ef529/barcode4j-2.1.jar">
+		<attributes>
+			<attribute name="gradle_used_by_scope" value=""/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="/Users/gamblek/.gradle/caches/modules-2/files-2.1/org.slf4j/jul-to-slf4j/1.7.26/8031352b2bb0a49e67818bf04c027aa92e645d5c/jul-to-slf4j-1.7.26.jar">
+		<attributes>
+			<attribute name="gradle_used_by_scope" value=""/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="/Users/gamblek/.gradle/caches/modules-2/files-2.1/org.bouncycastle/bcpkix-jdk15on/1.69/45c36fb72fafb0b688c6af795e6cc803f6f79ee5/bcpkix-jdk15on-1.69.jar">
+		<attributes>
+			<attribute name="gradle_used_by_scope" value=""/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="/Users/gamblek/.gradle/caches/modules-2/files-2.1/org.bitbucket.b_c/jose4j/0.7.12/542e2cfef4496f7861463dcdd668f35c9ad9e0ca/jose4j-0.7.12.jar">
+		<attributes>
+			<attribute name="gradle_used_by_scope" value=""/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="/Users/gamblek/.gradle/caches/modules-2/files-2.1/org.jetbrains.kotlinx/kotlinx-coroutines-core-jvm/1.5.2/f4cc07a50437659e0043e7da762809a46932b6a0/kotlinx-coroutines-core-jvm-1.5.2.jar">
+		<attributes>
+			<attribute name="gradle_used_by_scope" value=""/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="/Users/gamblek/.gradle/caches/modules-2/files-2.1/org.jetbrains.kotlin/kotlin-stdlib-jdk8/1.5.31/ff5d99aecd328872494e8921b72bf6e3af97af3e/kotlin-stdlib-jdk8-1.5.31.jar">
+		<attributes>
+			<attribute name="gradle_used_by_scope" value=""/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="/Users/gamblek/.gradle/caches/modules-2/files-2.1/javax.servlet/javax.servlet-api/3.1.0/3cd63d075497751784b2fa84be59432f4905bf7c/javax.servlet-api-3.1.0.jar">
+		<attributes>
+			<attribute name="gradle_used_by_scope" value=""/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="/Users/gamblek/.gradle/caches/modules-2/files-2.1/com.inductiveautomation.ignition/simple-orm/8.1.24/f1a317982a203ca16dcfbb2a6555cdebf865dac3/simple-orm-8.1.24.jar">
+		<attributes>
+			<attribute name="gradle_used_by_scope" value=""/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="/Users/gamblek/.gradle/caches/modules-2/files-2.1/com.inductiveautomation.ignition/gateway-api-web/8.1.24/5fb92e4ee65ae0274996ab2ee3e18454760166d6/gateway-api-web-8.1.24.jar">
+		<attributes>
+			<attribute name="gradle_used_by_scope" value=""/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="/Users/gamblek/.gradle/caches/modules-2/files-2.1/org.hsqldb/hsqldb/2.6.0/3d14d37f7c99987950aa81a3a286f3f1e7144243/hsqldb-2.6.0.jar">
+		<attributes>
+			<attribute name="gradle_used_by_scope" value=""/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="/Users/gamblek/.gradle/caches/modules-2/files-2.1/com.google.protobuf/protobuf-java/3.8.0/b5f93103d113540bb848fe9ce4e6819b1f39ee49/protobuf-java-3.8.0.jar">
+		<attributes>
+			<attribute name="gradle_used_by_scope" value=""/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="/Users/gamblek/.gradle/caches/modules-2/files-2.1/javax.mail/javax.mail-api/1.6.2/17a8151bab44f9c94f34c10db70d95ba3c830eda/javax.mail-api-1.6.2.jar">
+		<attributes>
+			<attribute name="gradle_used_by_scope" value=""/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="/Users/gamblek/.gradle/caches/modules-2/files-2.1/com.sun.mail/javax.mail/1.6.2/935151eb71beff17a2ffac15dd80184a99a0514f/javax.mail-1.6.2.jar">
+		<attributes>
+			<attribute name="gradle_used_by_scope" value=""/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="/Users/gamblek/.gradle/caches/modules-2/files-2.1/org.apache.wicket/wicket-core/6.30.0/728cae9b71f41ee565fc5b8f1656cf2e6aafa451/wicket-core-6.30.0.jar">
+		<attributes>
+			<attribute name="gradle_used_by_scope" value=""/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="/Users/gamblek/.gradle/caches/modules-2/files-2.1/org.apache.wicket/wicket-datetime/6.30.0/4abc319435bf4e4b6d8dbfc0c88133d91d7960cf/wicket-datetime-6.30.0.jar">
+		<attributes>
+			<attribute name="gradle_used_by_scope" value=""/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="/Users/gamblek/.gradle/caches/modules-2/files-2.1/org.apache.wicket/wicket-extensions/6.30.0/ade2d1968f13cebcd50795ecc4f796f82abcb0ee/wicket-extensions-6.30.0.jar">
+		<attributes>
+			<attribute name="gradle_used_by_scope" value=""/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="/Users/gamblek/.gradle/caches/modules-2/files-2.1/org.apache.wicket/wicket-request/6.30.0/ae12e213317c35d635d3e58d3ee4800405cc2ebf/wicket-request-6.30.0.jar">
+		<attributes>
+			<attribute name="gradle_used_by_scope" value=""/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="/Users/gamblek/.gradle/caches/modules-2/files-2.1/org.apache.wicket/wicket-util/6.30.0/f1c160a28c6e906d45b3462edd49160825ae91e0/wicket-util-6.30.0.jar">
+		<attributes>
+			<attribute name="gradle_used_by_scope" value=""/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="/Users/gamblek/.gradle/caches/modules-2/files-2.1/com.squareup/tape/1.2.3/a56c013cdf3af49efec795ebecfc866612f815eb/tape-1.2.3.jar">
+		<attributes>
+			<attribute name="gradle_used_by_scope" value=""/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="/Users/gamblek/.gradle/caches/modules-2/files-2.1/commons-fileupload/commons-fileupload/1.4/f95188e3d372e20e7328706c37ef366e5d7859b0/commons-fileupload-1.4.jar">
+		<attributes>
+			<attribute name="gradle_used_by_scope" value=""/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="/Users/gamblek/.gradle/caches/modules-2/files-2.1/com.github.virtuald/curvesapi/1.06/159dd2e8956459a4eb0a9a6ecda9004d8d289708/curvesapi-1.06.jar">
+		<attributes>
+			<attribute name="gradle_used_by_scope" value=""/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="/Users/gamblek/.gradle/caches/modules-2/files-2.1/org.apache.xmlbeans/xmlbeans/3.1.0/6dac1f897dfb3e3f17fc79b18a3353b2e51c464e/xmlbeans-3.1.0.jar">
+		<attributes>
+			<attribute name="gradle_used_by_scope" value=""/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="/Users/gamblek/.gradle/caches/modules-2/files-2.1/ch.qos.logback/logback-core/1.2.3/864344400c3d4d92dfeb0a305dc87d953677c03c/logback-core-1.2.3.jar">
+		<attributes>
+			<attribute name="gradle_used_by_scope" value=""/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="/Users/gamblek/.gradle/caches/modules-2/files-2.1/org.apache.httpcomponents/httpcore/4.4.13/853b96d3afbb7bf8cc303fe27ee96836a10c1834/httpcore-4.4.13.jar">
+		<attributes>
+			<attribute name="gradle_used_by_scope" value=""/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="/Users/gamblek/.gradle/caches/modules-2/files-2.1/org.jheaps/jheaps/0.11/993769f9e2abd138a875a1888580dbcd72bf04a3/jheaps-0.11.jar">
+		<attributes>
+			<attribute name="gradle_used_by_scope" value=""/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="/Users/gamblek/.gradle/caches/modules-2/files-2.1/org.bouncycastle/bcutil-jdk15on/1.69/c3edf93d346e97f64f041e448e7455c39c7eff64/bcutil-jdk15on-1.69.jar">
+		<attributes>
+			<attribute name="gradle_used_by_scope" value=""/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="/Users/gamblek/.gradle/caches/modules-2/files-2.1/org.bouncycastle/bcprov-jdk15on/1.69/91e1628251cf3ca90093ce9d0fe67e5b7dab3850/bcprov-jdk15on-1.69.jar">
+		<attributes>
+			<attribute name="gradle_used_by_scope" value=""/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="/Users/gamblek/.gradle/caches/modules-2/files-2.1/org.jetbrains.kotlin/kotlin-stdlib-jdk7/1.5.31/77e0f2568912e45d26c31fd417a332458508acdf/kotlin-stdlib-jdk7-1.5.31.jar">
+		<attributes>
+			<attribute name="gradle_used_by_scope" value=""/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="/Users/gamblek/.gradle/caches/modules-2/files-2.1/org.jetbrains.kotlin/kotlin-stdlib/1.5.31/6628d61d0f5603568e72d2d5915d2c034b4f1c55/kotlin-stdlib-1.5.31.jar">
+		<attributes>
+			<attribute name="gradle_used_by_scope" value=""/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="/Users/gamblek/.gradle/caches/modules-2/files-2.1/javax.activation/activation/1.1/e6cb541461c2834bdea3eb920f1884d1eb508b50/activation-1.1.jar">
+		<attributes>
+			<attribute name="gradle_used_by_scope" value=""/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="/Users/gamblek/.gradle/caches/modules-2/files-2.1/org.jetbrains/annotations/13.0/919f0dfe192fb4e063e7dacadee7f8bb9a2672a9/annotations-13.0.jar">
+		<attributes>
+			<attribute name="gradle_used_by_scope" value=""/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="/Users/gamblek/.gradle/caches/modules-2/files-2.1/org.jetbrains.kotlin/kotlin-stdlib-common/1.5.31/43331609c7de811fed085e0dfd150874b157c32/kotlin-stdlib-common-1.5.31.jar">
+		<attributes>
+			<attribute name="gradle_used_by_scope" value=""/>
+		</attributes>
+	</classpathentry>
+</classpath>

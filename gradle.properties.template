@@ -1,0 +1,5 @@
+ignition.signing.keystoreFile=/path/to/your/keystore.jks
+ignition.signing.keystorePassword=your_keystore_password
+ignition.signing.certFile=/path/to/your/cert.cer
+ignition.signing.certAlias=the_alias_of_your_cert
+ignition.signing.certPassword=the_password_for_your_cert

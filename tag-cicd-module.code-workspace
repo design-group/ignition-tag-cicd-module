@@ -1,0 +1,34 @@
+{
+  "folders": [
+    {
+      "name": "Root",
+      "path": "."
+    },
+    {
+      "name": "Common",
+      "path": "common/src/main"
+    },
+    {
+      "name": "Gateway",
+      "path": "gateway/src/main"
+    },
+    {
+      "name": "Designer",
+      "path": "designer/src/main"
+    },
+    {
+      "name": "Docker",
+      "path": "docker/temp/ignition-data"
+    }
+  ],
+  "settings": {
+    "java.configuration.updateBuildConfiguration": "automatic",
+    "java.compile.nullAnalysis.mode": "automatic",
+    "java.format.settings.url": ".vscode/java-formatter.xml",
+
+    "java.import.gradle.version": "wrapper",
+    "java.import.gradle.wrapper.enabled": true,
+    "java.import.gradle.user.home": null,
+    "java.jdt.ls.java.home": "~/.sdkman/candidates/java/17.0.11-zulu"
+  }
+}

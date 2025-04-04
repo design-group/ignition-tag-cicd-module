@@ -1,0 +1,48 @@
+/* static/css/custom.css */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1.5rem;
+  margin-top: 1rem;
+  margin-bottom: 2rem;
+}
+
+.card {
+  display: block;
+  padding: 1.5rem;
+  border-radius: 8px;
+  background-color: var(--ifm-card-background-color, #f8f9fa); /* Fallback for light mode */
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+  transition: all 0.3s ease;
+  text-decoration: none;
+  color: inherit;
+  cursor: pointer;
+}
+
+.card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+  background-color: var(--ifm-hover-overlay, #e9ecef); /* Fallback for light mode */
+}
+
+.card h3 {
+  margin-top: 0;
+  font-size: 1.2rem;
+  color: var(--ifm-link-color, #1a73e8); /* Matches link color */
+}
+
+.card p {
+  margin-bottom: 1rem;
+  color: var(--ifm-color-gray-600, #555); /* Gray tone for text */
+}
+
+.card span {
+  display: inline-block;
+  font-weight: 500;
+  color: var(--ifm-link-color, #1a73e8);
+  text-decoration: none;
+}
+
+.card:hover span {
+  text-decoration: underline;
+}
