@@ -77,9 +77,9 @@ Explore the module's main functionality:
 
 ## Support and Community
 
-- **GitHub Issues**: [Report bugs or request features](https://github.com/keith-gamble/ignition-tag-cicd-module/issues)
-- **GitHub Repository**: [Access the source code](https://github.com/keith-gamble/ignition-tag-cicd-module)
+- **GitHub Issues**: [Report bugs or request features](https://github.com/design-group/ignition-tag-cicd-module/issues)
+- **GitHub Repository**: [Access the source code](https://github.com/design-group/ignition-tag-cicd-module)
 
 ## License
 
-The Tag CICD Module is licensed under the [MIT License](https://github.com/keith-gamble/ignition-tag-cicd-module/blob/master/LICENSE.txt).
+The Tag CICD Module is licensed under the [MIT License](https://github.com/design-group/ignition-tag-cicd-module/blob/master/LICENSE.txt).

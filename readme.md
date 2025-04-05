@@ -30,7 +30,7 @@ This module lets you:
 
 ## Installation
 
-1. Download the latest `Tag-CICD.modl` file from the [Releases page](https://github.com/keith-gamble/ignition-tag-cicd-module/releases)
+1. Download the latest `Tag-CICD.modl` file from the [Releases page](https://github.com/design-group/ignition-tag-cicd-module/releases)
 2. In your Ignition Gateway, go to Config > Modules
 3. Click "Install or Upgrade a Module..."
 4. Choose the downloaded .modl file and follow the installation wizard
@@ -103,7 +103,7 @@ The module consists of three main components:
 
 ```bash
 # Clone the repository
-git clone https://github.com/keith-gamble/ignition-tag-cicd-module.git
+git clone https://github.com/design-group/ignition-tag-cicd-module.git
 cd ignition-tag-cicd-module
 
 # Build the module
@@ -131,4 +131,4 @@ This project is licensed under the [MIT License](LICENSE).
 
 ## Documentation
 
-For full documentation, visit the [Tag CICD Module Documentation](https://keith-gamble.github.io/ignition-tag-cicd-module/).
+For full documentation, visit the [Tag CICD Module Documentation](https://design-group.github.io/ignition-tag-cicd-module/).

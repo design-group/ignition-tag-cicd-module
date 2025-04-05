@@ -1,6 +1,6 @@
 # Tag Versioning
 
-- Tag versioning is accomplished by using the [Tag-CI-CD module](https://github.com/keith-gamble/ignition-tag-cicd-module). This can be used to avoid saving tags in the gateway backup, and instead save them in a git repository. Some helper scripts are provided to assist in the process.
+- Tag versioning is accomplished by using the [Tag-CI-CD module](https://github.com/design-group/ignition-tag-cicd-module). This can be used to avoid saving tags in the gateway backup, and instead save them in a git repository. Some helper scripts are provided to assist in the process.
 
 ## tag-import.sh
 

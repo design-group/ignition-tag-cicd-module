@@ -34,8 +34,8 @@ ignitionModule {
     moduleDependencies.set(mapOf())
 
     hooks.set(mapOf(
-        "dev.kgamble.ignition.tag_cicd.gateway.TagCICDGatewayHook" to "G",
-        "dev.kgamble.ignition.tag_cicd.designer.TagCICDDesignerHook" to "D"
+        "dev.bwdesigngroup.ignition.tag_cicd.gateway.TagCICDGatewayHook" to "G",
+        "dev.bwdesigngroup.ignition.tag_cicd.designer.TagCICDDesignerHook" to "D"
     ))
 
     applyInductiveArtifactRepo.set(true)

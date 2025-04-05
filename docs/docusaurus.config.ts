@@ -5,9 +5,9 @@ const config: Config = {
   title: 'Ignition Tag CICD Module',
   tagline: 'Enabling Version control and CI/CD practices for Ignition tags',
   favicon: 'img/favicon.ico',
-  url: 'https://keith-gamble.github.io',
+  url: 'https://design-group.github.io',
   baseUrl: '/ignition-tag-cicd-module/',
-  organizationName: 'keith-gamble',
+  organizationName: 'design-group',
   projectName: 'ignition-tag-cicd-module',
   onBrokenLinks: 'warn',
   onBrokenMarkdownLinks: 'warn',
@@ -24,7 +24,7 @@ const config: Config = {
           sidebarPath: './sidebars.ts',
           routeBasePath: '/',
           editUrl:
-            'https://github.com/keith-gamble/ignition-tag-cicd-module/tree/master/docs',
+            'https://github.com/design-group/ignition-tag-cicd-module/tree/master/docs',
         },
         blog: false,
         theme: {
@@ -55,7 +55,7 @@ const config: Config = {
           label: 'Documentation',
         },
         {
-          href: 'https://github.com/keith-gamble/ignition-tag-cicd-module',
+          href: 'https://github.com/design-group/ignition-tag-cicd-module',
           label: 'GitHub',
           position: 'right',
         },
@@ -78,7 +78,7 @@ const config: Config = {
           items: [
             {
               label: 'GitHub Issues',
-              href: 'https://github.com/keith-gamble/ignition-tag-cicd-module/issues',
+              href: 'https://github.com/design-group/ignition-tag-cicd-module/issues',
             },
           ],
         },
@@ -87,7 +87,7 @@ const config: Config = {
           items: [
             {
               label: 'GitHub',
-              href: 'https://github.com/keith-gamble/ignition-tag-cicd-module',
+              href: 'https://github.com/design-group/ignition-tag-cicd-module',
             },
           ],
         },

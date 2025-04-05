@@ -21,7 +21,7 @@ Before installing, ensure your system meets these requirements:
 
 ### Releases
 
-1. Go to the [Releases page](https://github.com/keith-gamble/ignition-tag-cicd-module/releases) on GitHub
+1. Go to the [Releases page](https://github.com/design-group/ignition-tag-cicd-module/releases) on GitHub
 2. Download the latest `Tag-CICD.modl` file
 
 ## Troubleshooting
@@ -52,4 +52,4 @@ After successful installation:
 2. Review the [Configuration File](configuration-file) structure
 3. Explore the [Designer Features](../designer/ui-components) to start using the module
 
-For any installation issues not covered here, please [submit an issue](https://github.com/keith-gamble/ignition-tag-cicd-module/issues) on GitHub.
+For any installation issues not covered here, please [submit an issue](https://github.com/design-group/ignition-tag-cicd-module/issues) on GitHub.
