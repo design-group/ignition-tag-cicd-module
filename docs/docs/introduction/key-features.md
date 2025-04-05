@@ -102,7 +102,7 @@ When importing tags, the [standard collision policies](https://www.docs.inductiv
 
 The module seamlessly integrates with the Ignition Designer:
 
-![Designer Interface](/img/tag-config-manager.png)
+![Designer Interface](/img/ui-elements/tag-configuration-manager.png)
 
 - **Custom Toolbar** - Quick access to export and import operations
 - **Configuration Manager** - UI for managing and organizing export/import configurations
