@@ -48,8 +48,8 @@ If you encounter any issues during installation:
 
 After successful installation:
 
-1. Head to [Basic Setup](basic-setup) to configure the module
-2. Review the [Configuration File](configuration-file) structure
+1. Head to [Basic Setup](./basic-setup) to configure the module
+2. Review the [Configuration File](./configuration-file) structure
 3. Explore the [Designer Features](../designer/ui-components) to start using the module
 
 For any installation issues not covered here, please [submit an issue](https://github.com/design-group/ignition-tag-cicd-module/issues) on GitHub.

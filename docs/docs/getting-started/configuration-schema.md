@@ -116,5 +116,5 @@ Here’s an example `export-config.json` that conforms to the schema:
 
 ## Next Steps
 
-- Learn how to set up your configuration file in [Basic Setup](basic-setup).
+- Learn how to set up your configuration file in [Basic Setup](./basic-setup).
 - Explore export options in [Tag Export](../tag-export/export-modes).
