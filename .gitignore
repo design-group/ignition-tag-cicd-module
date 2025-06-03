@@ -34,3 +34,6 @@ gradle.properties
 __pycache__/
 .pytest_cache/
 out/
+
+# Docker override files
+docker-compose.override.yaml

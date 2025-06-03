@@ -241,7 +241,7 @@ public class IndividualFilesExportStrategy implements TagExportImportStrategy {
                 jsonObject.has("typeId")) {
             dependencies.add(jsonObject.get("typeId").getAsString());
         }
-
+    
         if (jsonObject.has("tags")) {
             JsonArray tags = jsonObject.getAsJsonArray("tags");
             for (JsonElement tagElement : tags) {
@@ -250,14 +250,27 @@ public class IndividualFilesExportStrategy implements TagExportImportStrategy {
                 }
             }
         }
-
+    
         if (jsonObject.has("parameters")) {
-            JsonArray parameters = jsonObject.getAsJsonArray("parameters");
-            for (JsonElement paramElement : parameters) {
-                if (paramElement.isJsonObject()) {
-                    JsonObject param = paramElement.getAsJsonObject();
-                    if (param.has("value") && param.get("value").isJsonObject()) {
-                        findUdtDependencies(param.get("value").getAsJsonObject(), dependencies);
+            JsonElement parametersElement = jsonObject.get("parameters");
+            
+            // Handle both JsonArray and JsonObject cases for parameters
+            if (parametersElement.isJsonArray()) {
+                JsonArray parameters = parametersElement.getAsJsonArray();
+                for (JsonElement paramElement : parameters) {
+                    if (paramElement.isJsonObject()) {
+                        JsonObject param = paramElement.getAsJsonObject();
+                        if (param.has("value") && param.get("value").isJsonObject()) {
+                            findUdtDependencies(param.get("value").getAsJsonObject(), dependencies);
+                        }
+                    }
+                }
+            } else if (parametersElement.isJsonObject()) {
+                JsonObject parameters = parametersElement.getAsJsonObject();
+                for (Map.Entry<String, JsonElement> entry : parameters.entrySet()) {
+                    JsonElement paramValue = entry.getValue();
+                    if (paramValue.isJsonObject()) {
+                        findUdtDependencies(paramValue.getAsJsonObject(), dependencies);
                     }
                 }
             }

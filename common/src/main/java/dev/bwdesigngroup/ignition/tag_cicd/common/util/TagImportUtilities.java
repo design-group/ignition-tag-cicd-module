@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory;
 
 import dev.bwdesigngroup.ignition.tag_cicd.common.strategy.TagExportImportStrategy;
 import dev.bwdesigngroup.ignition.tag_cicd.common.strategy.TagExportImportStrategyFactory;
+import com.inductiveautomation.ignition.common.tags.TagUtilities;
 import com.inductiveautomation.ignition.common.gson.JsonArray;
 import com.inductiveautomation.ignition.common.gson.JsonElement;
 import com.inductiveautomation.ignition.common.gson.JsonObject;
@@ -44,14 +45,28 @@ public class TagImportUtilities {
 
         try (Stream<Path> paths = Files.walk(path, 1)) {
             paths.filter(Files::isRegularFile)
+                    .filter(file -> file.toString().toLowerCase().endsWith(".json"))
                     .forEach(file -> {
                         try {
                             String content = new String(Files.readAllBytes(file));
-                            JsonObject tagObject = com.inductiveautomation.ignition.common.tags.TagUtilities
-                                    .stringToJson(content).getAsJsonObject();
-                            tagsArray.add(tagObject);
+
+                            // Parse the JSON and validate it's an object
+                            JsonElement jsonElement = TagUtilities.stringToJson(content);
+
+                            if (jsonElement.isJsonObject()) {
+                                JsonObject tagObject = jsonElement.getAsJsonObject();
+                                tagsArray.add(tagObject);
+                            } else {
+                                logger.warn("Skipping file {} - contains {} instead of JsonObject. Content: {}",
+                                        file.toString(),
+                                        jsonElement.getClass().getSimpleName(),
+                                        content.length() > 100 ? content.substring(0, 100) + "..." : content);
+                            }
                         } catch (IOException e) {
                             logger.error("Error reading file: " + file.toString(), e);
+                        } catch (Exception e) {
+                            logger.error("Error parsing JSON from file: " + file.toString() + " - " + e.getMessage(),
+                                    e);
                         }
                     });
 
