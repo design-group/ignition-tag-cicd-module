@@ -9,6 +9,7 @@ tmp/
 
 # VS Code files
 .vscode/
+.project/
 # IntelliJ IDEA files
 .idea/
 
