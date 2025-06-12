@@ -49,8 +49,8 @@ public class IndividualFilesExportStrategy implements TagExportImportStrategy {
             boolean excludeUdtDefinitions) throws IOException {
         try {
             logger.info(
-                    "Exporting tags as individual files: provider={}, baseTagPath={}, filePath={}, recursive={}",
-                    provider, baseTagPath, filePath, recursive);
+                    "Exporting tags as individual files: provider={}, baseTagPath={}, filePath={}, recursive={}, deleteExisting={}",
+                    provider, baseTagPath, filePath, recursive, deleteExisting);
 
             TagConfigurationModel tagConfigurationModel = TagConfigUtilities.getTagConfigurationModel(
                     tagManager, provider, baseTagPath, recursive, localPropsOnly);
@@ -64,7 +64,11 @@ public class IndividualFilesExportStrategy implements TagExportImportStrategy {
                 }
             }
 
+            // Enhanced cleanup for individual files mode
             if (deleteExisting) {
+                logger.info("Cleaning existing files in directory for individual files export: {}", directoryPath);
+                // Use the enhanced cleanup that precisely removes only files that shouldn't be
+                // there
                 FileUtilities.deleteExistingFiles(directoryPath, tagsJson);
             }
 
@@ -241,7 +245,7 @@ public class IndividualFilesExportStrategy implements TagExportImportStrategy {
                 jsonObject.has("typeId")) {
             dependencies.add(jsonObject.get("typeId").getAsString());
         }
-    
+
         if (jsonObject.has("tags")) {
             JsonArray tags = jsonObject.getAsJsonArray("tags");
             for (JsonElement tagElement : tags) {
@@ -250,10 +254,10 @@ public class IndividualFilesExportStrategy implements TagExportImportStrategy {
                 }
             }
         }
-    
+
         if (jsonObject.has("parameters")) {
             JsonElement parametersElement = jsonObject.get("parameters");
-            
+
             // Handle both JsonArray and JsonObject cases for parameters
             if (parametersElement.isJsonArray()) {
                 JsonArray parameters = parametersElement.getAsJsonArray();

@@ -47,8 +47,8 @@ public class SingleFileExportStrategy implements TagExportImportStrategy {
             boolean excludeUdtDefinitions) throws IOException {
         try {
             logger.info(
-                    "Exporting tags as single file: provider={}, baseTagPath={}, filePath={}, recursive={}",
-                    provider, baseTagPath, filePath, recursive);
+                    "Exporting tags as single file: provider={}, baseTagPath={}, filePath={}, recursive={}, deleteExisting={}",
+                    provider, baseTagPath, filePath, recursive, deleteExisting);
 
             TagConfigurationModel tagConfigurationModel = TagConfigUtilities.getTagConfigurationModel(
                     tagManager, provider, baseTagPath, recursive, localPropsOnly);
@@ -62,6 +62,16 @@ public class SingleFileExportStrategy implements TagExportImportStrategy {
 
             File file = new File(filePath);
             File parentDir = file.getParentFile();
+
+            // Handle deleteExisting for single file mode
+            if (deleteExisting && file.exists()) {
+                logger.info("Deleting existing file: {}", file.getAbsolutePath());
+                if (!file.delete()) {
+                    logger.warn("Failed to delete existing file: {}", file.getAbsolutePath());
+                }
+            }
+
+            // Create parent directory if it doesn't exist
             if (parentDir != null && !parentDir.exists()) {
                 if (!parentDir.mkdirs()) {
                     throw new IOException("Failed to create directory: " + parentDir.getAbsolutePath());
