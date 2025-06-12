@@ -47,14 +47,35 @@ public class IndividualFilesExportStrategy implements TagExportImportStrategy {
             String filePath,
             boolean deleteExisting,
             boolean excludeUdtDefinitions) throws IOException {
+
+        boolean cleanupPerformed = false;
+
         try {
             logger.info(
                     "Exporting tags as individual files: provider={}, baseTagPath={}, filePath={}, recursive={}, deleteExisting={}",
                     provider, baseTagPath, filePath, recursive, deleteExisting);
 
+            // CRITICAL: Validate configuration BEFORE any file operations
+            logger.debug("Validating export configuration...");
+            TagExportUtilities.validateExportConfiguration(tagManager, provider, baseTagPath, recursive,
+                    localPropsOnly);
+
             TagConfigurationModel tagConfigurationModel = TagConfigUtilities.getTagConfigurationModel(
                     tagManager, provider, baseTagPath, recursive, localPropsOnly);
             JsonObject tagsJson = TagExportUtilities.convertToJsonObject(tagConfigurationModel);
+
+            // Additional validation of the export result before cleanup
+            if (hasUnknownTagTypes(tagsJson)) {
+                String errorMsg = "Export validation failed: Contains Unknown tag types. ";
+                if (baseTagPath != null && baseTagPath.startsWith("_types_/")) {
+                    errorMsg += "The UDT folder '" + baseTagPath + "' may not exist or may be empty. " +
+                            "Please verify the folder exists and contains UDT definitions.";
+                } else {
+                    errorMsg += "This usually indicates an invalid tag path or empty folder. " +
+                            "Please verify the tag path exists and contains tags.";
+                }
+                throw new IOException(errorMsg);
+            }
 
             String directoryPath = ensureDirectoryPath(filePath);
             File directory = new File(directoryPath);
@@ -64,20 +85,70 @@ public class IndividualFilesExportStrategy implements TagExportImportStrategy {
                 }
             }
 
-            // Enhanced cleanup for individual files mode
+            // Only perform cleanup AFTER successful validation
             if (deleteExisting) {
-                logger.info("Cleaning existing files in directory for individual files export: {}", directoryPath);
-                // Use the enhanced cleanup that precisely removes only files that shouldn't be
-                // there
+                logger.info("Validation successful - proceeding with cleanup of directory: {}", directoryPath);
                 FileUtilities.deleteExistingFiles(directoryPath, tagsJson);
+                cleanupPerformed = true;
             }
 
             saveTagsAsIndividualFiles(tagsJson, directoryPath, excludeUdtDefinitions);
             logger.info("Successfully exported tags as individual files to: {}", directoryPath);
+
+        } catch (IllegalArgumentException e) {
+            // These are validation errors - provide clear user-friendly message
+            String userMessage = "Export configuration error: " + e.getMessage();
+            logger.error("Export validation failed: {}", e.getMessage());
+            throw new IOException(userMessage, e);
+
         } catch (Exception e) {
             logger.error("Error exporting tags as individual files: {}", e.getMessage(), e);
+
+            // If we performed cleanup but export failed, warn the user
+            if (cleanupPerformed) {
+                logger.warn("Export failed after cleanup was performed. Directory may be in inconsistent state: {}",
+                        filePath);
+                throw new IOException(
+                        "Export failed after directory cleanup. The target directory may be in an inconsistent state. "
+                                +
+                                "Original error: " + e.getMessage(),
+                        e);
+            }
+
             throw new IOException("Failed to export tags as individual files: " + e.getMessage(), e);
         }
+    }
+
+    /**
+     * Checks if the JSON structure contains any Unknown tag types.
+     * 
+     * @param json the JSON to check
+     * @return true if Unknown tag types are found
+     */
+    private boolean hasUnknownTagTypes(JsonObject json) {
+        // Check the root level
+        if (json.has("tagType") && "Unknown".equals(json.get("tagType").getAsString())) {
+            return true;
+        }
+
+        // Check tags array
+        if (json.has("tags") && json.get("tags").isJsonArray()) {
+            JsonArray tags = json.getAsJsonArray("tags");
+            for (JsonElement tagElement : tags) {
+                if (tagElement.isJsonObject()) {
+                    JsonObject tagObject = tagElement.getAsJsonObject();
+                    if (tagObject.has("tagType") && "Unknown".equals(tagObject.get("tagType").getAsString())) {
+                        return true;
+                    }
+                    // Recursively check nested structures
+                    if (hasUnknownTagTypes(tagObject)) {
+                        return true;
+                    }
+                }
+            }
+        }
+
+        return false;
     }
 
     @Override

@@ -28,7 +28,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Dialog for editing a tag configuration.
+ * Dialog for editing a tag configuration with enhanced validation.
  */
 public class TagConfigEditorDialog extends JDialog {
     private static final Logger logger = LoggerFactory.getLogger(TagConfigEditorDialog.class.getName());
@@ -45,6 +45,7 @@ public class TagConfigEditorDialog extends JDialog {
     private final JComboBox<String> collisionPolicyComboBox;
     private final JCheckBox includeUdtDefinitionsCheckBox;
     private final JLabel selectionStatusLabel;
+    private final JLabel validationWarningLabel;
 
     private boolean confirmed = false;
     private JsonObject configObject;
@@ -72,6 +73,12 @@ public class TagConfigEditorDialog extends JDialog {
         selectionStatusLabel = new JLabel("Selection: Provider Root");
         selectionStatusLabel.setFont(selectionStatusLabel.getFont().deriveFont(Font.BOLD));
 
+        // Add validation warning label
+        validationWarningLabel = new JLabel();
+        validationWarningLabel.setForeground(Color.RED);
+        validationWarningLabel.setFont(validationWarningLabel.getFont().deriveFont(Font.BOLD, 11f));
+        validationWarningLabel.setVisible(false);
+
         exportProviderRootCheckBox = new JCheckBox("Export Provider Root", true);
         exportProviderRootCheckBox.addActionListener(e -> {
             if (exportProviderRootCheckBox.isSelected()) {
@@ -79,13 +86,14 @@ public class TagConfigEditorDialog extends JDialog {
                 isRootSelection = true;
                 selectionStatusLabel.setText("Selection: Provider Root");
                 updateUdtCheckboxState();
+                validateSelection();
             }
         });
 
         JLabel exportPathLabel = new JLabel("Export Path:");
         exportPathField = new JTextField(20);
-        fullPathPreviewLabel = new JLabel(INSTALL_DIR_PREFIX); // Initialize with prefix only
-        fullPathPreviewLabel.setForeground(Color.GRAY); // Subtle color for preview
+        fullPathPreviewLabel = new JLabel(INSTALL_DIR_PREFIX);
+        fullPathPreviewLabel.setForeground(Color.GRAY);
 
         JLabel exportModeLabel = new JLabel("Export Mode:");
         String[] exportModes = Arrays.stream(ExportMode.values())
@@ -146,6 +154,7 @@ public class TagConfigEditorDialog extends JDialog {
                 isRootSelection = false;
                 selectionStatusLabel.setText("Selection: " + baseTagPath);
                 setTagPathOnComponent(selectedProvider, baseTagPath);
+                validateSelection(); // Validate on load
             }
         }
 
@@ -157,6 +166,7 @@ public class TagConfigEditorDialog extends JDialog {
                 isRootSelection = true;
                 selectionStatusLabel.setText("Selection: Provider Root");
                 updateUdtCheckboxState();
+                validateSelection();
             }
         });
 
@@ -206,9 +216,15 @@ public class TagConfigEditorDialog extends JDialog {
         gbc.weightx = 1.0;
         formPanel.add(selectionStatusLabel, gbc);
 
-        // Tag Browser
+        // Validation warning label
         gbc.gridx = 0;
         gbc.gridy = 2;
+        gbc.gridwidth = 2;
+        formPanel.add(validationWarningLabel, gbc);
+
+        // Tag Browser
+        gbc.gridx = 0;
+        gbc.gridy = 3;
         gbc.gridwidth = 2;
         gbc.weightx = 1.0;
         gbc.fill = GridBagConstraints.BOTH;
@@ -231,7 +247,7 @@ public class TagConfigEditorDialog extends JDialog {
 
         // Export Mode row
         gbc.gridx = 0;
-        gbc.gridy = 3;
+        gbc.gridy = 4;
         gbc.gridwidth = 1;
         gbc.weightx = 0.0;
         formPanel.add(exportModeLabel, gbc);
@@ -242,7 +258,7 @@ public class TagConfigEditorDialog extends JDialog {
 
         // Collision Policy row
         gbc.gridx = 0;
-        gbc.gridy = 4;
+        gbc.gridy = 5;
         gbc.gridwidth = 1;
         gbc.weightx = 0.0;
         formPanel.add(collisionPolicyLabel, gbc);
@@ -253,7 +269,7 @@ public class TagConfigEditorDialog extends JDialog {
 
         // Export Path row with prefix and preview
         gbc.gridx = 0;
-        gbc.gridy = 5;
+        gbc.gridy = 6;
         gbc.gridwidth = 1;
         gbc.weightx = 0.0;
         formPanel.add(exportPathLabel, gbc);
@@ -265,20 +281,20 @@ public class TagConfigEditorDialog extends JDialog {
 
         // Full path preview row
         gbc.gridx = 1;
-        gbc.gridy = 6;
+        gbc.gridy = 7;
         gbc.gridwidth = 1;
         gbc.weightx = 1.0;
         formPanel.add(fullPathPreviewLabel, gbc);
 
         // Export Provider Root checkbox row
         gbc.gridx = 0;
-        gbc.gridy = 7;
+        gbc.gridy = 8;
         gbc.gridwidth = 2;
         formPanel.add(exportProviderRootCheckBox, gbc);
 
         // Include UDT Definitions checkbox row
         gbc.gridx = 0;
-        gbc.gridy = 8;
+        gbc.gridy = 9;
         gbc.gridwidth = 2;
         formPanel.add(includeUdtDefinitionsCheckBox, gbc);
 
@@ -297,12 +313,13 @@ public class TagConfigEditorDialog extends JDialog {
 
         setContentPane(contentPanel);
         pack();
-        setSize(550, 550); // Increased height to accommodate preview label
+        setSize(550, 600); // Increased height for validation warning
         setResizable(true);
         DialogUtilities.centerOnOwner(this, context.getFrame());
 
         // Update preview initially
         updateFullPathPreview();
+        validateSelection();
     }
 
     private void updateFullPathPreview() {
@@ -335,9 +352,49 @@ public class TagConfigEditorDialog extends JDialog {
                     }
                 }
                 updateUdtCheckboxState();
+                validateSelection();
             });
         }
         return component;
+    }
+
+    /**
+     * Validates the current tag selection and shows helpful info for UDT exports.
+     */
+    private void validateSelection() {
+        String infoMessage = null;
+
+        if (!isRootSelection) {
+            TagPath selectedPath = tagSelectionComponent.getSelectedTagPath();
+            if (selectedPath != null) {
+                String pathString = selectedPath.toStringFull();
+                String providerName = selectedPath.getSource();
+                if (pathString.startsWith(providerName + "/")) {
+                    pathString = pathString.substring(providerName.length() + 1);
+                }
+
+                // Provide helpful info for _types_ folder selections
+                if (pathString.startsWith("_types_/")) {
+                    infoMessage = "ℹ️ Exporting UDT definitions from: " + pathString
+                            + ". Make sure this folder contains the UDT definitions you want to export.";
+                    validationWarningLabel.setForeground(new Color(0, 100, 200)); // Blue for info
+                } else if (pathString.equals("_types_")) {
+                    infoMessage = "ℹ️ Exporting all UDT definitions from the _types_ folder.";
+                    validationWarningLabel.setForeground(new Color(0, 100, 200)); // Blue for info
+                }
+            }
+        }
+
+        if (infoMessage != null) {
+            validationWarningLabel.setText("<html><div style='width: 400px;'>" + infoMessage + "</div></html>");
+            validationWarningLabel.setVisible(true);
+        } else {
+            validationWarningLabel.setVisible(false);
+        }
+
+        // Trigger layout update
+        revalidate();
+        repaint();
     }
 
     private void updateUdtCheckboxState() {
@@ -383,6 +440,7 @@ public class TagConfigEditorDialog extends JDialog {
         isRootSelection = true;
         selectionStatusLabel.setText("Selection: Provider Root");
         updateUdtCheckboxState();
+        validateSelection();
     }
 
     private void saveConfiguration() {
@@ -393,7 +451,6 @@ public class TagConfigEditorDialog extends JDialog {
             boolean hasOverlap = false;
             if (configObject != null) {
                 // Editing existing config
-                // Iterate through the config array to find the index of the current config
                 int index = -1;
                 for (int i = 0; i < configManager.getConfigArray().size(); i++) {
                     JsonElement existingConfig = configManager.getConfigArray().get(i);
@@ -421,7 +478,6 @@ public class TagConfigEditorDialog extends JDialog {
                 }
             }
 
-            confirmed = true;
             confirmed = true;
             configObject = new JsonObject();
             String providerName = (String) providerComboBox.getSelectedItem();

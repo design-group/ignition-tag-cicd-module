@@ -39,25 +39,42 @@ public class TagConfigUtilities {
 	/**
 	 * Returns a tag configuration model for the given provider and tag path.
 	 *
-	 * @param provider the provider to retrieve tag configuration for.
-	 * @param tagPath the base tag path to retrieve tag configuration for.
-	 * @param recursive If true, will recursively search the `baseTagPath` for tags. If false, will only search for the direct children of `baseTagPath` for tags.
-	 * @param localPropsOnly Set to True to only return configuration created by a user (aka no inherited properties). Useful for tag export and tag UI edits of raw JSON text.
+	 * @param provider       the provider to retrieve tag configuration for.
+	 * @param tagPath        the base tag path to retrieve tag configuration for.
+	 * @param recursive      If true, will recursively search the `baseTagPath` for
+	 *                       tags. If false, will only search for the direct
+	 *                       children of `baseTagPath` for tags.
+	 * @param localPropsOnly Set to True to only return configuration created by a
+	 *                       user (aka no inherited properties). Useful for tag
+	 *                       export and tag UI edits of raw JSON text.
 	 * @return a tag configuration model for the given provider and tag path.
 	 */
-	public static TagConfigurationModel getTagConfigurationModel(GatewayTagManager tagManager, String provider, String tagPath, Boolean recursive, Boolean localPropsOnly) {
+	public static TagConfigurationModel getTagConfigurationModel(GatewayTagManager tagManager, String provider,
+			String tagPath, Boolean recursive, Boolean localPropsOnly) {
 		TagPath baseTagPath;
 		if (tagPath == null || tagPath.isEmpty()) {
 			baseTagPath = new BasicTagPath(provider);
 		} else {
-			baseTagPath = new BasicTagPath(provider, List.of(tagPath));
+			// Properly split the tag path into components
+			List<String> pathComponents = new ArrayList<>();
+			String[] parts = tagPath.split("/");
+			for (String part : parts) {
+				if (part != null && !part.trim().isEmpty()) {
+					pathComponents.add(part.trim());
+				}
+			}
+			baseTagPath = new BasicTagPath(provider, pathComponents);
 		}
-		
-		logger.trace("Requesting tag configuration for provider " + provider + " and tag path " + baseTagPath.toString() + " with recursive=" + recursive + " and localPropsOnly=" + localPropsOnly);
 
-		TagConfigurationModel tagConfigurationModel = tagManager.getTagProvider(provider).getTagConfigsAsync(List.of(baseTagPath), recursive, localPropsOnly).join().get(0);
+		logger.trace("Requesting tag configuration for provider " + provider + " and tag path " + baseTagPath.toString()
+				+ " with recursive=" + recursive + " and localPropsOnly=" + localPropsOnly);
 
-		logger.trace("Tag configuration model for provider " + provider + " and tag path " + baseTagPath.toString() + " with recursive=" + recursive + " and localPropsOnly=" + localPropsOnly + " is: " + tagConfigurationModel.toString());
+		TagConfigurationModel tagConfigurationModel = tagManager.getTagProvider(provider)
+				.getTagConfigsAsync(List.of(baseTagPath), recursive, localPropsOnly).join().get(0);
+
+		logger.trace("Tag configuration model for provider " + provider + " and tag path " + baseTagPath.toString()
+				+ " with recursive=" + recursive + " and localPropsOnly=" + localPropsOnly + " is: "
+				+ tagConfigurationModel.toString());
 
 		return tagConfigurationModel;
 	}
