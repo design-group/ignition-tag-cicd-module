@@ -51,8 +51,8 @@ public class StructuredFilesExportStrategy implements TagExportImportStrategy {
             boolean excludeUdtDefinitions) throws IOException {
         try {
             logger.info(
-                    "Exporting tags in structured format: provider={}, baseTagPath={}, filePath={}, recursive={}",
-                    provider, baseTagPath, filePath, recursive);
+                    "Exporting tags in structured format: provider={}, baseTagPath={}, filePath={}, recursive={}, deleteExisting={}",
+                    provider, baseTagPath, filePath, recursive, deleteExisting);
 
             // Get tag configuration model
             TagConfigurationModel tagConfigurationModel = TagConfigUtilities.getTagConfigurationModel(
@@ -70,12 +70,10 @@ public class StructuredFilesExportStrategy implements TagExportImportStrategy {
                 }
             }
 
-            // Delete existing files if requested
+            // Handle deleteExisting for structured files mode
             if (deleteExisting) {
-                if (directory.exists() && directory.isDirectory()) {
-                    deleteDirectory(directory);
-                    directory.mkdirs();
-                }
+                logger.info("Cleaning existing structured files in directory: {}", directoryPath);
+                FileUtilities.cleanStructuredFilesDirectory(directoryPath);
             }
 
             // Export tags in structured format
@@ -175,29 +173,6 @@ public class StructuredFilesExportStrategy implements TagExportImportStrategy {
         return filePath.endsWith("/") ? filePath : filePath + "/";
     }
 
-    private void deleteDirectory(File directory) throws IOException {
-        if (directory.exists()) {
-            File[] files = directory.listFiles();
-            if (files != null) {
-                for (File file : files) {
-                    if (file.isDirectory()) {
-                        deleteDirectory(file);
-                    } else {
-                        if (!file.delete()) {
-                            throw new IOException("Failed to delete file: " + file.getAbsolutePath());
-                        }
-                    }
-                }
-            }
-            // Don't delete the root directory itself, just its contents
-            if (!directory.getName().equals(directory.getAbsolutePath())) {
-                if (!directory.delete()) {
-                    throw new IOException("Failed to delete directory: " + directory.getAbsolutePath());
-                }
-            }
-        }
-    }
-
     private void exportTagsInStructuredFormat(JsonObject json, String basePath, boolean excludeUdtDefinitions)
             throws IOException {
         if (!json.has("tags")) {
@@ -282,8 +257,7 @@ public class StructuredFilesExportStrategy implements TagExportImportStrategy {
             String baseTagPath,
             String sourcePath,
             CollisionPolicy policy,
-            JsonObject createdTags
-    ) throws IOException {
+            JsonObject createdTags) throws IOException {
         // Create tag path
         List<String> pathComponents = new ArrayList<>();
         if (!baseTagPath.isEmpty()) {
@@ -296,11 +270,11 @@ public class StructuredFilesExportStrategy implements TagExportImportStrategy {
         if (tagsFile.exists() && tagsFile.isFile()) {
             String fileContent = new String(Files.readAllBytes(tagsFile.toPath()));
             JsonObject tagsJson = TagUtilities.stringToJson(fileContent).getAsJsonObject();
-            
+
             List<QualityCode> qualityCodes = tagManager
                     .importTagsAsync(basePath, fileContent, "json", policy)
                     .join();
-            createdTags.add(basePath.toString() + "/tags", 
+            createdTags.add(basePath.toString() + "/tags",
                     TagConfigUtilities.convertQualityCodesToArray(qualityCodes));
         }
 
@@ -309,11 +283,11 @@ public class StructuredFilesExportStrategy implements TagExportImportStrategy {
         if (udtsFile.exists() && udtsFile.isFile()) {
             String fileContent = new String(Files.readAllBytes(udtsFile.toPath()));
             JsonObject udtsJson = TagUtilities.stringToJson(fileContent).getAsJsonObject();
-            
+
             List<QualityCode> qualityCodes = tagManager
                     .importTagsAsync(basePath, fileContent, "json", policy)
                     .join();
-            createdTags.add(basePath.toString() + "/udts", 
+            createdTags.add(basePath.toString() + "/udts",
                     TagConfigUtilities.convertQualityCodesToArray(qualityCodes));
         }
 
@@ -322,14 +296,14 @@ public class StructuredFilesExportStrategy implements TagExportImportStrategy {
             List<Path> subdirectories = paths
                     .filter(Files::isDirectory)
                     .collect(Collectors.toList());
-            
+
             for (Path subdirectory : subdirectories) {
                 String folderName = subdirectory.getFileName().toString();
                 // Skip _types_ folder as it's already handled separately
                 if ("_types_".equals(folderName)) {
                     continue;
                 }
-                
+
                 String childPath = baseTagPath.isEmpty() ? folderName : baseTagPath + "/" + folderName;
                 importStructuredFiles(tagManager, provider, childPath, subdirectory.toString(), policy, createdTags);
             }

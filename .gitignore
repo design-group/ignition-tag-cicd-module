@@ -9,6 +9,7 @@ tmp/
 
 # VS Code files
 .vscode/
+.project/
 # IntelliJ IDEA files
 .idea/
 
@@ -34,3 +35,6 @@ gradle.properties
 __pycache__/
 .pytest_cache/
 out/
+
+# Docker override files
+docker-compose.override.yaml

@@ -47,8 +47,8 @@ public class SingleFileExportStrategy implements TagExportImportStrategy {
             boolean excludeUdtDefinitions) throws IOException {
         try {
             logger.info(
-                    "Exporting tags as single file: provider={}, baseTagPath={}, filePath={}, recursive={}",
-                    provider, baseTagPath, filePath, recursive);
+                    "Exporting tags as single file: provider={}, baseTagPath={}, filePath={}, recursive={}, deleteExisting={}",
+                    provider, baseTagPath, filePath, recursive, deleteExisting);
 
             TagConfigurationModel tagConfigurationModel = TagConfigUtilities.getTagConfigurationModel(
                     tagManager, provider, baseTagPath, recursive, localPropsOnly);
@@ -62,6 +62,16 @@ public class SingleFileExportStrategy implements TagExportImportStrategy {
 
             File file = new File(filePath);
             File parentDir = file.getParentFile();
+
+            // Handle deleteExisting for single file mode
+            if (deleteExisting && file.exists()) {
+                logger.info("Deleting existing file: {}", file.getAbsolutePath());
+                if (!file.delete()) {
+                    logger.warn("Failed to delete existing file: {}", file.getAbsolutePath());
+                }
+            }
+
+            // Create parent directory if it doesn't exist
             if (parentDir != null && !parentDir.exists()) {
                 if (!parentDir.mkdirs()) {
                     throw new IOException("Failed to create directory: " + parentDir.getAbsolutePath());
@@ -253,12 +263,27 @@ public class SingleFileExportStrategy implements TagExportImportStrategy {
             }
         }
 
-        if (jsonObject.has("parameters") && jsonObject.get("parameters").isJsonObject()) {
-            JsonObject parameters = jsonObject.getAsJsonObject("parameters");
-            for (Map.Entry<String, JsonElement> entry : parameters.entrySet()) {
-                JsonElement paramValue = entry.getValue();
-                if (paramValue.isJsonObject()) {
-                    findUdtDependencies(paramValue.getAsJsonObject(), dependencies);
+        if (jsonObject.has("parameters")) {
+            JsonElement parametersElement = jsonObject.get("parameters");
+
+            // Handle both JsonArray and JsonObject cases for parameters
+            if (parametersElement.isJsonArray()) {
+                JsonArray parameters = parametersElement.getAsJsonArray();
+                for (JsonElement paramElement : parameters) {
+                    if (paramElement.isJsonObject()) {
+                        JsonObject param = paramElement.getAsJsonObject();
+                        if (param.has("value") && param.get("value").isJsonObject()) {
+                            findUdtDependencies(param.get("value").getAsJsonObject(), dependencies);
+                        }
+                    }
+                }
+            } else if (parametersElement.isJsonObject()) {
+                JsonObject parameters = parametersElement.getAsJsonObject();
+                for (Map.Entry<String, JsonElement> entry : parameters.entrySet()) {
+                    JsonElement paramValue = entry.getValue();
+                    if (paramValue.isJsonObject()) {
+                        findUdtDependencies(paramValue.getAsJsonObject(), dependencies);
+                    }
                 }
             }
         }
