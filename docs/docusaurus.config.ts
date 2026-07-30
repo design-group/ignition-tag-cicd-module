@@ -41,6 +41,14 @@ const config: Config = {
   themes: ['@docusaurus/theme-mermaid'],
 
   themeConfig: {
+    announcementBar: {
+      id: 'repo-moved',
+      content:
+        'This project has moved to <a href="https://github.com/bw-design-group/ignition-tag-cicd"><b>bw-design-group/ignition-tag-cicd</b></a>. This site is archived and no longer updated.',
+      backgroundColor: '#b3261e',
+      textColor: '#ffffff',
+      isCloseable: false,
+    },
     navbar: {
       title: 'Ignition Tag CICD Module',
       logo: {
