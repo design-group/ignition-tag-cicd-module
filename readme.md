@@ -1,3 +1,18 @@
+> # ➡️ This repository has moved
+>
+> **`design-group/ignition-tag-cicd-module` is no longer maintained here.**
+>
+> Active development now lives in the **BW Design Group** organization:
+>
+> ### 👉 [github.com/bw-design-group/ignition-tag-cicd](https://github.com/bw-design-group/ignition-tag-cicd)
+>
+> The new repository is several versions ahead, supports Ignition 8.1 **and** 8.3, and is where all issues, releases, and pull requests are handled going forward. Please update your bookmarks, links, and any CI references.
+>
+> This repository is kept read-only for historical reference only.
+
+---
+
+<!-- Original README preserved below for reference -->
 # Ignition Tag CICD Module
 
 ## Overview
